@@ -71,7 +71,10 @@ public class Player : MonoBehaviour
         inputActions.Player.Move.canceled += On_MoveInput;
         inputActions.Player.Jump.performed += On_JumpInput;
         inputActions.Player.Use.performed += On_UseInput;
+        inputActions.Player.Camera.performed += On_CameraInput;
     }
+
+    
 
     private void OnDisable()
     {
@@ -120,6 +123,11 @@ public class Player : MonoBehaviour
     private void On_UseInput(InputAction.CallbackContext _)
     {
         Use();
+    }
+
+    private void On_CameraInput(InputAction.CallbackContext _)
+    {
+        Camera.main.GetComponent<MainCamera>().Switching();
     }
 
     /// <summary>
