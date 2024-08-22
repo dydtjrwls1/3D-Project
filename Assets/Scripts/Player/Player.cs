@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
@@ -53,6 +54,7 @@ public class Player : MonoBehaviour
 
     readonly int IsMove_Hash = Animator.StringToHash("IsMove");
     readonly int IsUse_Hash = Animator.StringToHash("Use");
+    readonly int Jump_Hash = Animator.StringToHash("Jump");
 
     private void Awake()
     {
@@ -153,6 +155,7 @@ public class Player : MonoBehaviour
         // 쿨타임 존재
         if (IsJumpAvailabe)
         {
+            animator.SetTrigger(Jump_Hash);
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse); // 위로 점프
             JumpCoolRemains = jumpCoolDown;                         // 쿨타임 초기화
         }
