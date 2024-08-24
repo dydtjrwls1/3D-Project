@@ -7,6 +7,7 @@ using UnityEngine.AI;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
+using UnityEngine.Windows;
 
 public class Player : MonoBehaviour
 {
@@ -33,6 +34,8 @@ public class Player : MonoBehaviour
 
     // 카메라가 바라보는 월드 상의 앞 방향 (X, Z 회전 무시하고)
     Vector3 cameraForward;
+
+    Vector2 moveInput;
 
     // 마우스 움직임에 따른 카메라의 변동 위치
     Quaternion cameraDelta;
@@ -125,7 +128,12 @@ public class Player : MonoBehaviour
     /// 이동 및 회전처리
     /// </summary>
     private void Movement(float deltaTime)
-    { 
+    {
+        float moveAngle = Vector3.SignedAngle(Vector3.forward, new Vector3(moveInput.x, 0, moveInput.y), Vector3.up);
+        float directionY = (cameraPoint.rotation.eulerAngles.y) + moveAngle;
+
+        rotationDelta = Quaternion.Euler(0, directionY, 0);
+
         // 새 이동할 위치 : 현재위치 + 초당 moveSpeed의 속도로, 오브젝트의 앞 쪽 방향을 기준으로 전진/후진/정지
         Vector3 position = rb.position + deltaTime * moveSpeed * moved *  (rotationDelta * transform.forward);
 
@@ -162,7 +170,7 @@ public class Player : MonoBehaviour
         float xDelta = MathF.Abs(delta.y) < 1.0f ? delta.x : 0.0f;
        
 
-        cameraDelta = cameraPoint.rotation * Quaternion.Euler(delta.y, -delta.x, 0);
+        cameraDelta = cameraPoint.rotation * Quaternion.Euler(-delta.y, delta.x, 0);
     }
 
     void CameraRotation()
@@ -180,10 +188,9 @@ public class Player : MonoBehaviour
     {
         moved = isMove ? 1.0f : 0.0f;
 
-        float moveAngle = Vector3.SignedAngle(Vector3.forward, new Vector3(input.x, 0, input.y), Vector3.up);
-        float directionY = (cameraPoint.rotation.eulerAngles.y) + moveAngle;
+        moveInput = input;
 
-        rotationDelta = Quaternion.Euler(0, directionY, 0);
+        
 
         animator.SetBool(IsMove_Hash, isMove);
     }
