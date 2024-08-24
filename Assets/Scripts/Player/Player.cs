@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.Tilemaps;
 
 public class Player : MonoBehaviour
 {
@@ -18,7 +19,16 @@ public class Player : MonoBehaviour
     // 점프 쿨타임
     public float jumpCoolDown = 3.0f;
 
+    // 카메라 이동 속도
+    public float cameraSpeed = 2.0f;
+
     PlayerInputActions inputActions;
+
+    Transform cameraPoint;
+
+    Vector3 cameraPos;
+
+    Vector3 deltaPos;
 
     // 회전방향(음수면 좌회전, 양수면 우회전)
     private float rotateDirection = 0.0f;
@@ -30,6 +40,8 @@ public class Player : MonoBehaviour
 
     // 남아있는 점프 쿨타임
     float jumpCoolRemains = 0.0f;
+
+    Quaternion cameraDelta;
 
     // 점프가 가능한지 확인하는 프로퍼티
     bool IsJumpAvailabe => (isGrounded && (JumpCoolRemains < 0.0f));
@@ -61,6 +73,7 @@ public class Player : MonoBehaviour
         inputActions = new PlayerInputActions();
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
+        cameraPoint = transform.GetChild(6);
 
         GroundSensor groundSensor = GetComponentInChildren<GroundSensor>();
         groundSensor.onGround += (isGround) => isGrounded = isGround;
@@ -74,9 +87,10 @@ public class Player : MonoBehaviour
         inputActions.Player.Jump.performed += On_JumpInput;
         inputActions.Player.Use.performed += On_UseInput;
         inputActions.Player.Camera.performed += On_CameraInput;
+        inputActions.Player.MousePoint.performed += On_MousePointInput;
     }
 
-    
+   
 
     private void OnDisable()
     {
@@ -87,8 +101,6 @@ public class Player : MonoBehaviour
         inputActions.Player.Disable();
     }
 
-    
-
     private void FixedUpdate()
     {
         Movement(Time.fixedDeltaTime);
@@ -97,6 +109,11 @@ public class Player : MonoBehaviour
     private void Update()
     {
         JumpCoolRemains -= Time.deltaTime; // 점프 쿨타임 줄이기
+    }
+
+    private void LateUpdate()
+    {
+        CameraRotation();
     }
 
     /// 이동 및 회전처리
@@ -130,6 +147,23 @@ public class Player : MonoBehaviour
     private void On_CameraInput(InputAction.CallbackContext _)
     {
         Camera.main.GetComponent<MainCamera>().Switching();
+    }
+
+    private void On_MousePointInput(InputAction.CallbackContext context)
+    {
+        Vector2 delta = context.ReadValue<Vector2>();
+
+        float yDelta = MathF.Abs(delta.x) < 1.0f ? delta.y : 0.0f;
+        float xDelta = MathF.Abs(delta.y) < 1.0f ? delta.x : 0.0f;
+       
+
+        cameraDelta = cameraPoint.rotation * Quaternion.Euler(delta.y, -delta.x, 0);
+    }
+
+    void CameraRotation()
+    {
+        cameraPoint.rotation = Quaternion.Slerp(cameraPoint.rotation, cameraDelta, Time.deltaTime * cameraSpeed);
+        Camera.main.transform.LookAt(cameraPoint.position);
     }
 
     /// <summary>
