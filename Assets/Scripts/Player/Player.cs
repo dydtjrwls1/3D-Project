@@ -22,13 +22,23 @@ public class Player : MonoBehaviour
     // 카메라 이동 속도
     public float cameraSpeed = 2.0f;
 
+    Rigidbody rb;
+
+    Animator animator;
+
     PlayerInputActions inputActions;
 
+    // 카메라가 바라보고 중심이되어서 회전할 포인트
     Transform cameraPoint;
 
-    Vector3 cameraPos;
+    // 카메라가 바라보는 월드 상의 앞 방향 (X, Z 회전 무시하고)
+    Vector3 cameraForward;
 
-    Vector3 deltaPos;
+    // 마우스 움직임에 따른 카메라의 변동 위치
+    Quaternion cameraDelta;
+
+    // 키보드 입력에 따른 플레이어 회전 위치
+    Quaternion rotationDelta; 
 
     // 회전방향(음수면 좌회전, 양수면 우회전)
     private float rotateDirection = 0.0f;
@@ -40,8 +50,6 @@ public class Player : MonoBehaviour
 
     // 남아있는 점프 쿨타임
     float jumpCoolRemains = 0.0f;
-
-    Quaternion cameraDelta;
 
     // 점프가 가능한지 확인하는 프로퍼티
     bool IsJumpAvailabe => (isGrounded && (JumpCoolRemains < 0.0f));
@@ -60,9 +68,7 @@ public class Player : MonoBehaviour
     // 점프 쿨타임에 변화가 있었음을 알리는 델리게이트
     public Action<float> onJumpCoolDownChange;
 
-    Rigidbody rb;
-
-    Animator animator;
+   
 
     readonly int IsMove_Hash = Animator.StringToHash("IsMove");
     readonly int IsUse_Hash = Animator.StringToHash("Use");
@@ -120,13 +126,17 @@ public class Player : MonoBehaviour
     /// </summary>
     private void Movement(float deltaTime)
     {
+
+
         // 새 이동할 위치 : 현재위치 + 초당 moveSpeed의 속도로, 오브젝트의 앞 쪽 방향을 기준으로 전진/후진/정지
-        Vector3 position = rb.position + deltaTime * moveSpeed * moveDirection * transform.forward;
+        Vector3 position = rb.position + deltaTime * moveSpeed * moveDirection *  (rotationDelta * transform.forward);
 
         // 새 회전 : 현재회전 + 초당 rotateSpeed의 속도로, 좌회전/우회전/정지하는 회전
         Quaternion rotation = rb.rotation * Quaternion.AngleAxis(deltaTime * rotateSpeed * rotateDirection, transform.up);
 
-        rb.Move(position, rotation);
+        // rb.Move(position, rotation);
+
+        rb.MovePosition(position);
     }
 
     private void On_MoveInput(UnityEngine.InputSystem.InputAction.CallbackContext context)
@@ -174,7 +184,10 @@ public class Player : MonoBehaviour
     void SetInput(Vector2 input, bool isMove)
     {
         rotateDirection = input.x;
-        moveDirection = input.y;
+        moveDirection = isMove ? 1.0f : 0.0f;
+        float inverse = input.y > 0.0f ? 0.0f : 180.0f;
+
+        rotationDelta = Quaternion.Euler(0, cameraPoint.rotation.eulerAngles.y + inverse, 0);
 
         animator.SetBool(IsMove_Hash, isMove);
     }
