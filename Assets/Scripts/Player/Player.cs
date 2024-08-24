@@ -42,8 +42,8 @@ public class Player : MonoBehaviour
 
     // 회전방향(음수면 좌회전, 양수면 우회전)
     private float rotateDirection = 0.0f;
-    // 이동방향(음수면 후진, 양수면 전진)
-    private float moveDirection = 0.0f;
+    
+    private float moved = 0.0f;
 
     // 현재 발이 바닥에 닿았는지 확인하는 변수.
     bool isGrounded = true;
@@ -125,18 +125,13 @@ public class Player : MonoBehaviour
     /// 이동 및 회전처리
     /// </summary>
     private void Movement(float deltaTime)
-    {
-
-
+    { 
         // 새 이동할 위치 : 현재위치 + 초당 moveSpeed의 속도로, 오브젝트의 앞 쪽 방향을 기준으로 전진/후진/정지
-        Vector3 position = rb.position + deltaTime * moveSpeed * moveDirection *  (rotationDelta * transform.forward);
-
-        // 새 회전 : 현재회전 + 초당 rotateSpeed의 속도로, 좌회전/우회전/정지하는 회전
-        Quaternion rotation = rb.rotation * Quaternion.AngleAxis(deltaTime * rotateSpeed * rotateDirection, transform.up);
-
-        // rb.Move(position, rotation);
+        Vector3 position = rb.position + deltaTime * moveSpeed * moved *  (rotationDelta * transform.forward);
 
         rb.MovePosition(position);
+
+        // transform.rotation = Quaternion.Slerp(transform.rotation, rotationDelta, Time.deltaTime * 50.0f);
     }
 
     private void On_MoveInput(UnityEngine.InputSystem.InputAction.CallbackContext context)
@@ -183,11 +178,12 @@ public class Player : MonoBehaviour
     /// <param name="isMove">이동 중이면 true, 아니면 false</param>
     void SetInput(Vector2 input, bool isMove)
     {
-        rotateDirection = input.x;
-        moveDirection = isMove ? 1.0f : 0.0f;
-        float inverse = input.y > 0.0f ? 0.0f : 180.0f;
+        moved = isMove ? 1.0f : 0.0f;
 
-        rotationDelta = Quaternion.Euler(0, cameraPoint.rotation.eulerAngles.y + inverse, 0);
+        float moveAngle = Vector3.SignedAngle(Vector3.forward, new Vector3(input.x, 0, input.y), Vector3.up);
+        float directionY = (cameraPoint.rotation.eulerAngles.y) + moveAngle;
+
+        rotationDelta = Quaternion.Euler(0, directionY, 0);
 
         animator.SetBool(IsMove_Hash, isMove);
     }
