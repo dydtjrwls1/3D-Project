@@ -32,7 +32,11 @@ public class Player : MonoBehaviour
     // 카메라가 바라보는 월드 상의 앞 방향 (X, Z 회전 무시하고)
     Vector3 cameraForward;
 
+    Vector3 deltaCameraVector;
+
     Vector2 moveInput;
+
+    
 
     // 마우스 움직임에 따른 카메라의 변동 위치
     Quaternion cameraDelta;
@@ -77,8 +81,8 @@ public class Player : MonoBehaviour
         inputActions = new PlayerInputActions();
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
-        mesh = transform.GetChild(0);
-        cameraPoint = transform.GetChild(1);
+        mesh = transform.GetChild(1);
+        cameraPoint = transform.GetChild(2);
 
         GroundSensor groundSensor = GetComponentInChildren<GroundSensor>();
         groundSensor.onGround += (isGround) => isGrounded = isGround;
@@ -126,7 +130,7 @@ public class Player : MonoBehaviour
     private void Movement(float deltaTime)
     {
         float moveAngle = Vector3.SignedAngle(Vector3.forward, new Vector3(moveInput.x, 0, moveInput.y), Vector3.up); // 입력값에 따른 이동 방향
-        float directionY = (cameraPoint.rotation.eulerAngles.y) + moveAngle;                                          // 현재 카메라의 방향 + 입력값에 따른 이동 방향
+        float directionY = (Camera.main.transform.rotation.eulerAngles.y) + moveAngle;                                          // 현재 카메라의 방향 + 입력값에 따른 이동 방향
 
         rotationDelta = Quaternion.Euler(0, directionY, 0);                                                           // 최종 이동할 방향의 각도
 
@@ -169,16 +173,18 @@ public class Player : MonoBehaviour
         Vector2 delta = context.ReadValue<Vector2>();
         Debug.Log(delta);
 
-        float yDelta = MathF.Abs(delta.x) < 1.0f ? delta.y : 0.0f;
-        float xDelta = MathF.Abs(delta.y) < 1.0f ? delta.x : 0.0f;
-       
+        // float yDelta = MathF.Abs(delta.x) < 1.0f ? delta.y : 0.0f;
+        // float xDelta = MathF.Abs(delta.y) < 1.0f ? delta.x : 0.0f;
 
-        cameraDelta = cameraPoint.rotation * Quaternion.Euler(-delta.y, delta.x, 0);
+        // cameraDelta = cameraPoint.rotation * Quaternion.Euler(-delta.y, delta.x, 0);
+        Quaternion rotation = Quaternion.AngleAxis(delta.x, transform.up) * Quaternion.AngleAxis(-delta.y, Camera.main.transform.right);
+        deltaCameraVector = rotation * (Camera.main.transform.localPosition);
     }
 
     void CameraRotation()
     {
-        cameraPoint.rotation = Quaternion.Slerp(cameraPoint.rotation, cameraDelta, Time.deltaTime * cameraSpeed);
+        // cameraPoint.rotation = Quaternion.Slerp(cameraPoint.rotation, cameraDelta, Time.deltaTime * cameraSpeed);
+        Camera.main.transform.localPosition = Vector3.Slerp(Camera.main.transform.localPosition, deltaCameraVector, Time.deltaTime * rotateSpeed);
         Camera.main.transform.LookAt(cameraPoint.position);
     }
 
