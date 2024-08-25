@@ -123,6 +123,8 @@ public class Player : MonoBehaviour
     private void LateUpdate()
     {
         CameraRotation();
+        Quaternion nextRotation = moved > 0.1f ? rotationDelta : mesh.rotation;                                       // 움직였으면 다음 회전이고 움직이지 않았으면 기존 회전을 유지하는 변수
+        mesh.rotation = Quaternion.Slerp(mesh.rotation, nextRotation, Time.deltaTime * rotateSpeed);
     }
 
     /// 이동 및 회전처리
@@ -139,9 +141,7 @@ public class Player : MonoBehaviour
         // 새 이동할 위치 : 현재위치 + 초당 moveSpeed의 속도로, 오브젝트의 앞 쪽 방향을 기준으로 전진/후진/정지
         Vector3 position = rb.position + deltaTime * moveSpeed * moved * (direction);
 
-        Quaternion nextRotation = moved > 0.1f ? rotationDelta : mesh.rotation;                                       // 움직였으면 다음 회전이고 움직이지 않았으면 기존 회전을 유지하는 변수
-
-        mesh.rotation = Quaternion.Slerp(mesh.rotation, nextRotation, deltaTime * rotateSpeed);
+        
 
         rb.MovePosition(position);
 
@@ -175,9 +175,10 @@ public class Player : MonoBehaviour
 
         // float yDelta = MathF.Abs(delta.x) < 1.0f ? delta.y : 0.0f;
         // float xDelta = MathF.Abs(delta.y) < 1.0f ? delta.x : 0.0f;
+        cameraPoint.transform.forward = Camera.main.transform.forward;
 
         // cameraDelta = cameraPoint.rotation * Quaternion.Euler(-delta.y, delta.x, 0);
-        Quaternion rotation = Quaternion.AngleAxis(delta.x, transform.up) * Quaternion.AngleAxis(-delta.y, Camera.main.transform.right);
+        Quaternion rotation = Quaternion.AngleAxis(delta.x, transform.up) * Quaternion.AngleAxis(-delta.y, cameraPoint.right);
         deltaCameraVector = rotation * (Camera.main.transform.localPosition);
     }
 
