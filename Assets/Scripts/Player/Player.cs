@@ -42,10 +42,8 @@ public class Player : MonoBehaviour
 
     // 키보드 입력에 따른 플레이어 회전 위치
     Quaternion rotationDelta; 
-
-    // 회전방향(음수면 좌회전, 양수면 우회전)
-    private float rotateDirection = 0.0f;
     
+    // 움직임 여부 결정 변수
     private float moved = 0.0f;
 
     // 현재 발이 바닥에 닿았는지 확인하는 변수.
@@ -82,7 +80,7 @@ public class Player : MonoBehaviour
         inputActions = new PlayerInputActions();
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
-        cameraPoint = transform.GetChild(6);
+        cameraPoint = transform.GetChild(1);
 
         GroundSensor groundSensor = GetComponentInChildren<GroundSensor>();
         groundSensor.onGround += (isGround) => isGrounded = isGround;
@@ -103,6 +101,8 @@ public class Player : MonoBehaviour
 
     private void OnDisable()
     {
+        inputActions.Player.MousePoint.performed -= On_MousePointInput;
+        inputActions.Player.Camera.performed -= On_CameraInput;
         inputActions.Player.Use.performed -= On_UseInput;
         inputActions.Player.Jump.performed -= On_JumpInput;
         inputActions.Player.Move.canceled -= On_MoveInput;
@@ -129,10 +129,10 @@ public class Player : MonoBehaviour
     /// </summary>
     private void Movement(float deltaTime)
     {
-        float moveAngle = Vector3.SignedAngle(Vector3.forward, new Vector3(moveInput.x, 0, moveInput.y), Vector3.up);
-        float directionY = (cameraPoint.rotation.eulerAngles.y) + moveAngle;
+        float moveAngle = Vector3.SignedAngle(Vector3.forward, new Vector3(moveInput.x, 0, moveInput.y), Vector3.up); // 입력값에 따른 이동 방향
+        float directionY = (cameraPoint.rotation.eulerAngles.y) + moveAngle;                                          // 현재 카메라의 방향 + 입력값에 따른 이동 방향
 
-        rotationDelta = Quaternion.Euler(0, directionY, 0);
+        rotationDelta = Quaternion.Euler(0, directionY, 0);                                                           // 최종 이동할 방향의 각도
 
         // 새 이동할 위치 : 현재위치 + 초당 moveSpeed의 속도로, 오브젝트의 앞 쪽 방향을 기준으로 전진/후진/정지
         Vector3 position = rb.position + deltaTime * moveSpeed * moved *  (rotationDelta * transform.forward);
@@ -187,10 +187,7 @@ public class Player : MonoBehaviour
     void SetInput(Vector2 input, bool isMove)
     {
         moved = isMove ? 1.0f : 0.0f;
-
         moveInput = input;
-
-        
 
         animator.SetBool(IsMove_Hash, isMove);
     }
