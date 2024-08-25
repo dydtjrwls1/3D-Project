@@ -1,13 +1,7 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.Tilemaps;
-using UnityEngine.Windows;
+
 
 public class Player : MonoBehaviour
 {
@@ -28,6 +22,9 @@ public class Player : MonoBehaviour
     Animator animator;
 
     PlayerInputActions inputActions;
+
+    // 캐릭터의 Mesh 의 부모 트랜스폼
+    Transform mesh;
 
     // 카메라가 바라보고 중심이되어서 회전할 포인트
     Transform cameraPoint;
@@ -80,6 +77,7 @@ public class Player : MonoBehaviour
         inputActions = new PlayerInputActions();
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
+        mesh = transform.GetChild(0);
         cameraPoint = transform.GetChild(1);
 
         GroundSensor groundSensor = GetComponentInChildren<GroundSensor>();
@@ -96,8 +94,6 @@ public class Player : MonoBehaviour
         inputActions.Player.Camera.performed += On_CameraInput;
         inputActions.Player.MousePoint.performed += On_MousePointInput;
     }
-
-   
 
     private void OnDisable()
     {
@@ -134,20 +130,26 @@ public class Player : MonoBehaviour
 
         rotationDelta = Quaternion.Euler(0, directionY, 0);                                                           // 최종 이동할 방향의 각도
 
+        Vector3 direction = rotationDelta * transform.forward;                                                        // 캐릭터가 다음 프레임에 이동하게 될 방향
+
         // 새 이동할 위치 : 현재위치 + 초당 moveSpeed의 속도로, 오브젝트의 앞 쪽 방향을 기준으로 전진/후진/정지
-        Vector3 position = rb.position + deltaTime * moveSpeed * moved *  (rotationDelta * transform.forward);
+        Vector3 position = rb.position + deltaTime * moveSpeed * moved * (direction);
+
+        Quaternion nextRotation = moved > 0.1f ? rotationDelta : mesh.rotation;                                       // 움직였으면 다음 회전이고 움직이지 않았으면 기존 회전을 유지하는 변수
+
+        mesh.rotation = Quaternion.Slerp(mesh.rotation, nextRotation, deltaTime * rotateSpeed);
 
         rb.MovePosition(position);
 
         // transform.rotation = Quaternion.Slerp(transform.rotation, rotationDelta, Time.deltaTime * 50.0f);
     }
 
-    private void On_MoveInput(UnityEngine.InputSystem.InputAction.CallbackContext context)
+    private void On_MoveInput(InputAction.CallbackContext context)
     {
         SetInput(context.ReadValue<Vector2>(), !context.canceled);
     }
 
-    private void On_JumpInput(UnityEngine.InputSystem.InputAction.CallbackContext _)
+    private void On_JumpInput(InputAction.CallbackContext _)
     {
         Jump();
     }
