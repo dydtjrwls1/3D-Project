@@ -449,7 +449,7 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5575278523275020228, guid: a46f30fa81fd9fd4b9c4a4a5295b1532, type: 3}
-      propertyPath: rotateSpeed
+      propertyPath: cameraSpeed
       value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []

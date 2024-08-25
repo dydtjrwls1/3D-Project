@@ -167,6 +167,7 @@ public class Player : MonoBehaviour
     private void On_MousePointInput(InputAction.CallbackContext context)
     {
         Vector2 delta = context.ReadValue<Vector2>();
+        Debug.Log(delta);
 
         float yDelta = MathF.Abs(delta.x) < 1.0f ? delta.y : 0.0f;
         float xDelta = MathF.Abs(delta.y) < 1.0f ? delta.x : 0.0f;

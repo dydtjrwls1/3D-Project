@@ -668,7 +668,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
-  rotateSpeed: 180
+  rotateSpeed: 15
   jumpForce: 5
   jumpCoolDown: 1
   cameraSpeed: 5
