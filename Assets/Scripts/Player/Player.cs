@@ -124,7 +124,7 @@ public class Player : MonoBehaviour
     {
         CameraRotation();
         Quaternion nextRotation = moved > 0.1f ? rotationDelta : mesh.rotation;                                       // 움직였으면 다음 회전이고 움직이지 않았으면 기존 회전을 유지하는 변수
-        mesh.rotation = Quaternion.Slerp(mesh.rotation, nextRotation, Time.deltaTime * rotateSpeed);
+        mesh.rotation = Quaternion.Slerp(mesh.rotation, nextRotation, Time.deltaTime * rotateSpeed);                  // player mesh 를 카메라 방향에 맞춰서 회전
     }
 
     /// 이동 및 회전처리
@@ -141,11 +141,7 @@ public class Player : MonoBehaviour
         // 새 이동할 위치 : 현재위치 + 초당 moveSpeed의 속도로, 오브젝트의 앞 쪽 방향을 기준으로 전진/후진/정지
         Vector3 position = rb.position + deltaTime * moveSpeed * moved * (direction);
 
-        
-
         rb.MovePosition(position);
-
-        // transform.rotation = Quaternion.Slerp(transform.rotation, rotationDelta, Time.deltaTime * 50.0f);
     }
 
     private void On_MoveInput(InputAction.CallbackContext context)
@@ -173,18 +169,14 @@ public class Player : MonoBehaviour
         Vector2 delta = context.ReadValue<Vector2>();
         Debug.Log(delta);
 
-        // float yDelta = MathF.Abs(delta.x) < 1.0f ? delta.y : 0.0f;
-        // float xDelta = MathF.Abs(delta.y) < 1.0f ? delta.x : 0.0f;
-        cameraPoint.transform.forward = Camera.main.transform.forward;
+        cameraPoint.transform.forward = Camera.main.transform.forward;  // 카메라 포인트의 회전을 메인 카메라와 같게 한다.
 
-        // cameraDelta = cameraPoint.rotation * Quaternion.Euler(-delta.y, delta.x, 0);
         Quaternion rotation = Quaternion.AngleAxis(delta.x, transform.up) * Quaternion.AngleAxis(-delta.y, cameraPoint.right);
         deltaCameraVector = rotation * (Camera.main.transform.localPosition);
     }
 
     void CameraRotation()
     {
-        // cameraPoint.rotation = Quaternion.Slerp(cameraPoint.rotation, cameraDelta, Time.deltaTime * cameraSpeed);
         Camera.main.transform.localPosition = Vector3.Slerp(Camera.main.transform.localPosition, deltaCameraVector, Time.deltaTime * rotateSpeed);
         Camera.main.transform.LookAt(cameraPoint.position);
     }
