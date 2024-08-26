@@ -83,11 +83,17 @@ public class Player : MonoBehaviour
         animator = GetComponent<Animator>();
         mesh = transform.GetChild(1);
         cameraPoint = transform.GetChild(2);
+        
 
         GroundSensor groundSensor = GetComponentInChildren<GroundSensor>();
         groundSensor.onGround += (isGround) => isGrounded = isGround;
     }
 
+    private void Start()
+    {
+        Cursor.lockState = CursorLockMode.Locked;  // 커서를 화면 중앙에 고정
+        Cursor.visible = false;  // 커서를 화면에서 숨김
+    }
     private void OnEnable()
     {
         inputActions.Player.Enable();
@@ -167,17 +173,16 @@ public class Player : MonoBehaviour
     private void On_MousePointInput(InputAction.CallbackContext context)
     {
         Vector2 delta = context.ReadValue<Vector2>();
-        Debug.Log(delta);
 
         cameraPoint.transform.forward = Camera.main.transform.forward;  // 카메라 포인트의 회전을 메인 카메라와 같게 한다.
 
-        Quaternion rotation = Quaternion.AngleAxis(delta.x, transform.up) * Quaternion.AngleAxis(-delta.y, cameraPoint.right);
+        Quaternion rotation = Quaternion.AngleAxis(delta.x, transform.up) * Quaternion.AngleAxis(-delta.y , cameraPoint.right);
         deltaCameraVector = rotation * (Camera.main.transform.localPosition);
     }
 
     void CameraRotation()
     {
-        Camera.main.transform.localPosition = Vector3.Slerp(Camera.main.transform.localPosition, deltaCameraVector, Time.deltaTime * rotateSpeed);
+        Camera.main.transform.localPosition = Vector3.Lerp(Camera.main.transform.localPosition, deltaCameraVector, Time.deltaTime * cameraSpeed);
         Camera.main.transform.LookAt(cameraPoint.position);
     }
 
