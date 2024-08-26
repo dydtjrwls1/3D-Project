@@ -173,6 +173,8 @@ public class Player : MonoBehaviour
     {
         Vector2 delta = context.ReadValue<Vector2>();
 
+        Quaternion rotation = Quaternion.AngleAxis(delta.x, Vector3.up);
+
     }
 
     void CameraRotation()

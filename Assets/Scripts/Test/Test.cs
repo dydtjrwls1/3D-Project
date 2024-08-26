@@ -12,11 +12,21 @@ public class Test : MonoBehaviour
     public List<Vector3> points = new List<Vector3>(); // 선을 그릴 포인트들
     public Color gizmoColor = Color.green; // Gizmo 색상
 
+    float magnitude;
+    private void Start()
+    {
+        magnitude = startVec.magnitude;
+    }
+
     private void Update()
     {
         elapsedTime += Time.deltaTime;
-        Vector3 endVec = Quaternion.AngleAxis(elapsedTime * 50.0f, Vector3.up) * startVec;
-        Debug.Log(endVec);
+        Debug.Log($"Start {Vector3.SqrMagnitude(startVec)}");
+        Vector3 endVec = (Quaternion.AngleAxis(-5, Vector3.up) * startVec.normalized) * magnitude;
+        Debug.Log($"End {Vector3.SqrMagnitude(endVec)}");
+        startVec = Vector3.Slerp(startVec, endVec, 0.1f);
+
+        
 
         if (points.Count == 0 || (points.Count > 0 && points[points.Count - 1] != transform.position))
         {
