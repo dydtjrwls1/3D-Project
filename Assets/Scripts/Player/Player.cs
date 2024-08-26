@@ -1,51 +1,46 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 
 public class Player : MonoBehaviour
 {
-    public float moveSpeed = 5.0f;
+    public float moveSpeed = 5.0f;              // 이동 속도
+    public float rotateSpeed = 180.0f;          // 플레이어 메쉬 회전 속도
+    float moved = 0.0f;                         // 움직임 여부 결정 변수
 
-    public float rotateSpeed = 180.0f;
+    public float jumpForce = 5.0f;              // 점프 세기
+    public float jumpCoolDown = 3.0f;           // 점프 쿨타임
+    float jumpCoolRemains = 0.0f;               // 남아있는 점프 쿨타임
 
-    public float jumpForce = 5.0f;
-
-    // 점프 쿨타임
-    public float jumpCoolDown = 3.0f;
-
-    // 카메라 이동 속도
-    public float cameraSpeed = 2.0f;
+    public float cameraSpeed = 2.0f;            // 카메라 이동 속도
 
     Rigidbody rb;
-
     Animator animator;
-
     PlayerInputActions inputActions;
 
-    // 캐릭터의 Mesh 의 부모 트랜스폼
-    Transform mesh;
+    Transform mesh;                             // 캐릭터의 Mesh 의 부모 트랜스폼
 
-    // 카메라가 바라보고 중심이되어서 회전할 포인트
-    Transform cameraPoint;
+    Transform cameraPoint;                      // 카메라가 바라보고 중심이되어서 회전할 포인트
 
-    // 카메라의 다음 벡터
-    Vector3 deltaCameraVector;
+    Vector3 deltaCameraVector;                  // 카메라의 다음 벡터
+     
+    Vector2 moveInput;                          // 키보드 이동 인풋값
 
-    // 키보드 이동 인풋값
-    Vector2 moveInput;
+    Quaternion rotationDelta;                   // 키보드 입력에 따른 플레이어 회전 위치
+    Quaternion deltaPointRotation;              // 카메라 포인트의 다음 회전
 
-    // 키보드 입력에 따른 플레이어 회전 위치
-    Quaternion rotationDelta; 
-    
-    // 움직임 여부 결정 변수
-    private float moved = 0.0f;
+    bool isGrounded = true;                     // 현재 발이 바닥에 닿았는지 확인하는 변수.
 
-    // 현재 발이 바닥에 닿았는지 확인하는 변수.
-    bool isGrounded = true;
 
-    // 남아있는 점프 쿨타임
-    float jumpCoolRemains = 0.0f;
+#if UNITY_EDITOR
+    public List<Vector3> points = new List<Vector3>(); // 선을 그릴 포인트들
+    public Color gizmoColor = Color.green; // Gizmo 색상
+    public bool gizmoOn = true;
+#endif
+
+
 
     // 점프가 가능한지 확인하는 프로퍼티
     bool IsJumpAvailabe => (isGrounded && (JumpCoolRemains < 0.0f));
@@ -81,6 +76,8 @@ public class Player : MonoBehaviour
 
         GroundSensor groundSensor = GetComponentInChildren<GroundSensor>();
         groundSensor.onGround += (isGround) => isGrounded = isGround;
+
+        Camera.main.transform.forward = cameraPoint.forward;
     }
 
     private void Start()
@@ -118,6 +115,14 @@ public class Player : MonoBehaviour
     private void Update()
     {
         JumpCoolRemains -= Time.deltaTime; // 점프 쿨타임 줄이기
+    
+        // 오브젝트의 현재 위치를 포인트 목록에 추가
+        if (gizmoOn && points.Count == 0 || (points.Count > 0 && points[points.Count - 1] != transform.position))
+        {
+            points.Add(Camera.main.transform.position);
+        }
+    
+
     }
 
     private void LateUpdate()
@@ -132,7 +137,7 @@ public class Player : MonoBehaviour
     private void Movement(float deltaTime)
     {
         float moveAngle = Vector3.SignedAngle(Vector3.forward, new Vector3(moveInput.x, 0, moveInput.y), Vector3.up); // 입력값에 따른 이동 방향
-        float directionY = (Camera.main.transform.rotation.eulerAngles.y) + moveAngle;                                          // 현재 카메라의 방향 + 입력값에 따른 이동 방향
+        float directionY = (Camera.main.transform.rotation.eulerAngles.y) + moveAngle;                                // 현재 카메라의 방향 + 입력값에 따른 이동 방향
 
         rotationDelta = Quaternion.Euler(0, directionY, 0);                                                           // 최종 이동할 방향의 각도
 
@@ -168,15 +173,17 @@ public class Player : MonoBehaviour
     {
         Vector2 delta = context.ReadValue<Vector2>();
 
-        cameraPoint.transform.forward = Camera.main.transform.forward;  // 카메라 포인트의 회전을 메인 카메라와 같게 한다.
-
-        Quaternion rotation = Quaternion.AngleAxis(delta.x, transform.up) * Quaternion.AngleAxis(-delta.y , cameraPoint.right);
-        deltaCameraVector = rotation * (Camera.main.transform.localPosition);
     }
 
     void CameraRotation()
     {
+        cameraPoint.transform.rotation = Quaternion.Euler(0, Camera.main.transform.rotation.eulerAngles.y, 0);
+        
+        
         Camera.main.transform.localPosition = Vector3.Slerp(Camera.main.transform.localPosition, deltaCameraVector, Time.deltaTime * cameraSpeed);
+        
+        
+        
         Camera.main.transform.LookAt(cameraPoint.position);
     }
 
@@ -223,5 +230,19 @@ public class Player : MonoBehaviour
     public void Die()
     {
         Debug.Log("사망");
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = gizmoColor;
+
+
+        if (points.Count > 1)
+        {
+            for (int i = 0; i < points.Count - 1; i++)
+            {
+                Gizmos.DrawLine(points[i], points[i + 1]);
+            }
+        }
     }
 }

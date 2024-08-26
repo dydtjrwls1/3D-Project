@@ -381,6 +381,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51247eddbe19912428ec4513328733b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startVec: {x: 10, y: 5, z: 10}
+  points: []
+  gizmoColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!4 &1468278013
 Transform:
   m_ObjectHideFlags: 0
@@ -390,7 +393,7 @@ Transform:
   m_GameObject: {fileID: 1468278011}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.3912506, y: 2.3038657, z: 2.1321688}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -450,11 +453,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4774330034025443391, guid: a46f30fa81fd9fd4b9c4a4a5295b1532, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 7
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4774330034025443391, guid: a46f30fa81fd9fd4b9c4a4a5295b1532, type: 3}
       propertyPath: m_LocalPosition.z
       value: -5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5575278523275020228, guid: a46f30fa81fd9fd4b9c4a4a5295b1532, type: 3}
+      propertyPath: gizmoOn
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
