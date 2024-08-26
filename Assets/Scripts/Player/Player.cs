@@ -29,17 +29,11 @@ public class Player : MonoBehaviour
     // 카메라가 바라보고 중심이되어서 회전할 포인트
     Transform cameraPoint;
 
-    // 카메라가 바라보는 월드 상의 앞 방향 (X, Z 회전 무시하고)
-    Vector3 cameraForward;
-
+    // 카메라의 다음 벡터
     Vector3 deltaCameraVector;
 
+    // 키보드 이동 인풋값
     Vector2 moveInput;
-
-    
-
-    // 마우스 움직임에 따른 카메라의 변동 위치
-    Quaternion cameraDelta;
 
     // 키보드 입력에 따른 플레이어 회전 위치
     Quaternion rotationDelta; 
@@ -182,7 +176,7 @@ public class Player : MonoBehaviour
 
     void CameraRotation()
     {
-        Camera.main.transform.localPosition = Vector3.Lerp(Camera.main.transform.localPosition, deltaCameraVector, Time.deltaTime * cameraSpeed);
+        Camera.main.transform.localPosition = Vector3.Slerp(Camera.main.transform.localPosition, deltaCameraVector, Time.deltaTime * cameraSpeed);
         Camera.main.transform.LookAt(cameraPoint.position);
     }
 
