@@ -10,6 +10,7 @@ public class Player : MonoBehaviour
     public float moveSpeed = 5.0f;              // 이동 속도
     public float rotateSpeed = 180.0f;          // 플레이어 메쉬 회전 속도
     float moved = 0.0f;                         // 움직임 여부 결정 변수
+    float nextRotate;                           // 방향키 눌렸을 때 다음 회전의 회전 값
 
     public float jumpForce = 5.0f;              // 점프 세기
     public float jumpCoolDown = 3.0f;           // 점프 쿨타임
@@ -26,6 +27,8 @@ public class Player : MonoBehaviour
     Vector2 moveInput;                          // 키보드 이동 인풋값
     Quaternion rotationDelta;                   // 키보드 입력에 따른 플레이어 회전 위치
     bool isGrounded = true;                     // 현재 발이 바닥에 닿았는지 확인하는 변수.
+
+    Transform cameraPoint;
 
     // 점프가 가능한지 확인하는 프로퍼티
     bool IsJumpAvailabe => (isGrounded && (JumpCoolRemains < 0.0f));
@@ -56,6 +59,7 @@ public class Player : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
         mesh = transform.GetChild(0);
+        cameraPoint = transform.GetChild(1);
 
         GroundSensor groundSensor = GetComponentInChildren<GroundSensor>();
         groundSensor.onGround += (isGround) => isGrounded = isGround;
@@ -104,6 +108,7 @@ public class Player : MonoBehaviour
 
     private void LateUpdate()
     {
+        rotationDelta = cameraPoint.rotation * Quaternion.AngleAxis(nextRotate, Vector3.up);
         Quaternion nextRotation = moved > 0.1f ? rotationDelta : mesh.rotation;                                       // 움직였으면 다음 회전이고 움직이지 않았으면 기존 회전을 유지하는 변수
         mesh.rotation = Quaternion.Slerp(mesh.rotation, nextRotation, Time.deltaTime * rotateSpeed);                  // player mesh 를 카메라 방향에 맞춰서 회전
     }
@@ -112,12 +117,7 @@ public class Player : MonoBehaviour
     /// </summary>
     private void Movement(float deltaTime)
     {
-        float moveAngle = Vector3.SignedAngle(Vector3.forward, new Vector3(moveInput.x, 0, moveInput.y), Vector3.up); // 입력값에 따른 이동 방향
-        float directionY = (Camera.main.transform.rotation.eulerAngles.y) + moveAngle;                                // 현재 카메라의 방향 + 입력값에 따른 이동 방향
-
-        rotationDelta = Quaternion.Euler(0, directionY, 0);                                                           // 최종 이동할 방향의 각도
-
-        Vector3 direction = rotationDelta * transform.forward;                                                        // 캐릭터가 다음 프레임에 이동하게 될 방향
+        Vector3 direction = cameraPoint.forward + Vector3.right * moveInput.x + Vector3.forward * moveInput.y;                                                       // 캐릭터가 다음 프레임에 이동하게 될 방향
 
         // 새 이동할 위치 : 현재위치 + 초당 moveSpeed의 속도로, 오브젝트의 앞 쪽 방향을 기준으로 전진/후진/정지
         Vector3 position = rb.position + deltaTime * moveSpeed * moved * (direction);
@@ -167,6 +167,7 @@ public class Player : MonoBehaviour
     {
         moved = isMove ? 1.0f : 0.0f;
         moveInput = input;
+        nextRotate = Vector3.Angle(Vector3.forward, new Vector3(moveInput.x, moveInput.y));
 
         animator.SetBool(IsMove_Hash, isMove);
     }
