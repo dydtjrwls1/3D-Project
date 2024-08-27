@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.OnScreen;
 
 
 public class Player : MonoBehaviour
@@ -14,7 +15,8 @@ public class Player : MonoBehaviour
     public float jumpCoolDown = 3.0f;           // 점프 쿨타임
     float jumpCoolRemains = 0.0f;               // 남아있는 점프 쿨타임
 
-    public Action<Vector2> OnMouseInput = null;
+    public Action<Vector2> OnMouseInput = null; // 마우스 변동이 있을 때 마다 실행되는 이벤트
+    public Action<float, bool> OnScrollInput = null;// 마우스 스크롤 변동이 있을 때 마다 실행되는 이벤트
 
     Rigidbody rb;
     Animator animator;
@@ -73,12 +75,14 @@ public class Player : MonoBehaviour
         inputActions.Player.Use.performed += On_UseInput;
         inputActions.Player.Camera.performed += On_CameraInput;
         inputActions.Player.MousePoint.performed += On_MouseDeltaInput;
+        inputActions.Player.Zoom.performed += On_ZoomInput;
     }
 
     
 
     private void OnDisable()
     {
+        inputActions.Player.Zoom.performed -= On_ZoomInput;
         inputActions.Player.MousePoint.performed -= On_MouseDeltaInput;
         inputActions.Player.Camera.performed -= On_CameraInput;
         inputActions.Player.Use.performed -= On_UseInput;
@@ -145,6 +149,13 @@ public class Player : MonoBehaviour
     {
         Vector2 delta = context.ReadValue<Vector2>();
         OnMouseInput?.Invoke(delta);
+    }
+
+    private void On_ZoomInput(InputAction.CallbackContext context)
+    {
+        bool canceled = context.canceled;
+        Vector2 delta = context.ReadValue<Vector2>();
+        OnScrollInput?.Invoke(delta.y, canceled);
     }
 
     /// <summary>
