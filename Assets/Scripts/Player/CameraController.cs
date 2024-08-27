@@ -49,7 +49,7 @@ public class CameraController : MonoBehaviour
             float input = delta > 0.0f ? 1.0f : -1.0f;  // 스크롤 방향이 위면 1 아래면 -1
             float nextZ = Mathf.Clamp(mainCamera.localPosition.z + input, -maxZoom, -minZoom);   // 줌값의 최대 최소값으로 clamp
 
-            nextZoom = new Vector3(mainCamera.localPosition.x, mainCamera.localPosition.y, nextZ); ;
+            nextZoom = new Vector3(mainCamera.localPosition.x, mainCamera.localPosition.y, nextZ);
         };
 
         nextZoom = mainCamera.localPosition;
