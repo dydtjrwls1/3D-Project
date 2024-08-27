@@ -14,33 +14,16 @@ public class Player : MonoBehaviour
     public float jumpCoolDown = 3.0f;           // 점프 쿨타임
     float jumpCoolRemains = 0.0f;               // 남아있는 점프 쿨타임
 
-    public float cameraSpeed = 2.0f;            // 카메라 이동 속도
+    public Action<Vector2> OnMouseInput = null;
 
     Rigidbody rb;
     Animator animator;
-    PlayerInputActions inputActions;
+    public PlayerInputActions inputActions;
 
     Transform mesh;                             // 캐릭터의 Mesh 의 부모 트랜스폼
-
-    Transform cameraPoint;                      // 카메라가 바라보고 중심이되어서 회전할 포인트
-
-    Vector3 deltaCameraVector;                  // 카메라의 다음 벡터
-     
     Vector2 moveInput;                          // 키보드 이동 인풋값
-
     Quaternion rotationDelta;                   // 키보드 입력에 따른 플레이어 회전 위치
-    Quaternion deltaPointRotation;              // 카메라 포인트의 다음 회전
-
     bool isGrounded = true;                     // 현재 발이 바닥에 닿았는지 확인하는 변수.
-
-
-#if UNITY_EDITOR
-    public List<Vector3> points = new List<Vector3>(); // 선을 그릴 포인트들
-    public Color gizmoColor = Color.green; // Gizmo 색상
-    public bool gizmoOn = true;
-#endif
-
-
 
     // 점프가 가능한지 확인하는 프로퍼티
     bool IsJumpAvailabe => (isGrounded && (JumpCoolRemains < 0.0f));
@@ -70,14 +53,10 @@ public class Player : MonoBehaviour
         inputActions = new PlayerInputActions();
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
-        mesh = transform.GetChild(1);
-        cameraPoint = transform.GetChild(2);
-        
+        mesh = transform.GetChild(0);
 
         GroundSensor groundSensor = GetComponentInChildren<GroundSensor>();
         groundSensor.onGround += (isGround) => isGrounded = isGround;
-
-        Camera.main.transform.forward = cameraPoint.forward;
     }
 
     private void Start()
@@ -93,12 +72,14 @@ public class Player : MonoBehaviour
         inputActions.Player.Jump.performed += On_JumpInput;
         inputActions.Player.Use.performed += On_UseInput;
         inputActions.Player.Camera.performed += On_CameraInput;
-        inputActions.Player.MousePoint.performed += On_MousePointInput;
+        inputActions.Player.MousePoint.performed += On_MouseDeltaInput;
     }
+
+    
 
     private void OnDisable()
     {
-        inputActions.Player.MousePoint.performed -= On_MousePointInput;
+        inputActions.Player.MousePoint.performed -= On_MouseDeltaInput;
         inputActions.Player.Camera.performed -= On_CameraInput;
         inputActions.Player.Use.performed -= On_UseInput;
         inputActions.Player.Jump.performed -= On_JumpInput;
@@ -115,19 +96,10 @@ public class Player : MonoBehaviour
     private void Update()
     {
         JumpCoolRemains -= Time.deltaTime; // 점프 쿨타임 줄이기
-    
-        // 오브젝트의 현재 위치를 포인트 목록에 추가
-        if (gizmoOn && points.Count == 0 || (points.Count > 0 && points[points.Count - 1] != transform.position))
-        {
-            points.Add(Camera.main.transform.position);
-        }
-    
-
     }
 
     private void LateUpdate()
     {
-        CameraRotation();
         Quaternion nextRotation = moved > 0.1f ? rotationDelta : mesh.rotation;                                       // 움직였으면 다음 회전이고 움직이지 않았으면 기존 회전을 유지하는 변수
         mesh.rotation = Quaternion.Slerp(mesh.rotation, nextRotation, Time.deltaTime * rotateSpeed);                  // player mesh 를 카메라 방향에 맞춰서 회전
     }
@@ -169,24 +141,10 @@ public class Player : MonoBehaviour
         Camera.main.GetComponent<MainCamera>().Switching();
     }
 
-    private void On_MousePointInput(InputAction.CallbackContext context)
+    private void On_MouseDeltaInput(InputAction.CallbackContext context)
     {
         Vector2 delta = context.ReadValue<Vector2>();
-
-        Quaternion rotation = Quaternion.AngleAxis(delta.x, Vector3.up);
-
-    }
-
-    void CameraRotation()
-    {
-        cameraPoint.transform.rotation = Quaternion.Euler(0, Camera.main.transform.rotation.eulerAngles.y, 0);
-        
-        
-        Camera.main.transform.localPosition = Vector3.Slerp(Camera.main.transform.localPosition, deltaCameraVector, Time.deltaTime * cameraSpeed);
-        
-        
-        
-        Camera.main.transform.LookAt(cameraPoint.position);
+        OnMouseInput?.Invoke(delta);
     }
 
     /// <summary>
@@ -232,19 +190,5 @@ public class Player : MonoBehaviour
     public void Die()
     {
         Debug.Log("사망");
-    }
-
-    void OnDrawGizmos()
-    {
-        Gizmos.color = gizmoColor;
-
-
-        if (points.Count > 1)
-        {
-            for (int i = 0; i < points.Count - 1; i++)
-            {
-                Gizmos.DrawLine(points[i], points[i + 1]);
-            }
-        }
     }
 }
