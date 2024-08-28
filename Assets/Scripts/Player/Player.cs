@@ -99,30 +99,37 @@ public class Player : MonoBehaviour
     private void FixedUpdate()
     {
         Movement(Time.fixedDeltaTime);
+        
     }
 
     private void Update()
     {
+        RotateMesh();
         JumpCoolRemains -= Time.deltaTime; // 점프 쿨타임 줄이기
     }
 
     private void LateUpdate()
     {
-        rotationDelta = cameraPoint.rotation * Quaternion.AngleAxis(nextRotate, Vector3.up);
-        Quaternion nextRotation = moved > 0.1f ? rotationDelta : mesh.rotation;                                       // 움직였으면 다음 회전이고 움직이지 않았으면 기존 회전을 유지하는 변수
-        mesh.rotation = Quaternion.Slerp(mesh.rotation, nextRotation, Time.deltaTime * rotateSpeed);                  // player mesh 를 카메라 방향에 맞춰서 회전
+        
     }
 
     /// 이동 및 회전처리
     /// </summary>
     private void Movement(float deltaTime)
     {
-        Vector3 direction = cameraPoint.forward + Vector3.right * moveInput.x + Vector3.forward * moveInput.y;                                                       // 캐릭터가 다음 프레임에 이동하게 될 방향
+        Vector3 direction = Quaternion.AngleAxis(nextRotate, Vector3.up) * Quaternion.AngleAxis(cameraPoint.rotation.eulerAngles.y, Vector3.up) * transform.forward;                                                    // 캐릭터가 다음 프레임에 이동하게 될 방향
 
         // 새 이동할 위치 : 현재위치 + 초당 moveSpeed의 속도로, 오브젝트의 앞 쪽 방향을 기준으로 전진/후진/정지
         Vector3 position = rb.position + deltaTime * moveSpeed * moved * (direction);
 
         rb.MovePosition(position);
+    }
+
+    void RotateMesh()
+    {
+        rotationDelta = Quaternion.AngleAxis(cameraPoint.rotation.eulerAngles.y, Vector3.up) * Quaternion.AngleAxis(nextRotate, Vector3.up);
+        Quaternion nextRotation = moved > 0.1f ? rotationDelta : mesh.rotation;                                       // 움직였으면 다음 회전이고 움직이지 않았으면 기존 회전을 유지하는 변수
+        mesh.rotation = Quaternion.Slerp(mesh.rotation, nextRotation, Time.deltaTime * rotateSpeed);                  // player mesh 를 카메라 방향에 맞춰서 회전
     }
 
     private void On_MoveInput(InputAction.CallbackContext context)
@@ -142,7 +149,7 @@ public class Player : MonoBehaviour
 
     private void On_CameraInput(InputAction.CallbackContext _)
     {
-        Camera.main.GetComponent<MainCamera>().Switching();
+        Debug.Log(Quaternion.AngleAxis(cameraPoint.rotation.y, Vector3.up).eulerAngles);
     }
 
     private void On_MouseDeltaInput(InputAction.CallbackContext context)
@@ -158,6 +165,8 @@ public class Player : MonoBehaviour
         OnScrollInput?.Invoke(delta.y, canceled);
     }
 
+    
+
     /// <summary>
     /// 이동 입력 처리용 함수
     /// </summary>
@@ -167,7 +176,7 @@ public class Player : MonoBehaviour
     {
         moved = isMove ? 1.0f : 0.0f;
         moveInput = input;
-        nextRotate = Vector3.Angle(Vector3.forward, new Vector3(moveInput.x, moveInput.y));
+        nextRotate = Vector3.SignedAngle(Vector3.forward, new Vector3(moveInput.x, 0, moveInput.y), Vector3.up);
 
         animator.SetBool(IsMove_Hash, isMove);
     }
