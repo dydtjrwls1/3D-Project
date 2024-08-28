@@ -130,6 +130,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2987883083718142281, guid: a46f30fa81fd9fd4b9c4a4a5295b1532, type: 3}
+      propertyPath: m_AngularDrag
+      value: Infinity
+      objectReference: {fileID: 0}
+    - target: {fileID: 2987883083718142281, guid: a46f30fa81fd9fd4b9c4a4a5295b1532, type: 3}
+      propertyPath: m_Constraints
+      value: 112
+      objectReference: {fileID: 0}
     - target: {fileID: 3011085068279230504, guid: a46f30fa81fd9fd4b9c4a4a5295b1532, type: 3}
       propertyPath: m_Name
       value: Player
