@@ -25,7 +25,9 @@ public class Player : MonoBehaviour
     Quaternion rotationDelta;                   // 키보드 입력에 따른 플레이어 회전 위치
     bool isGrounded = true;                     // 현재 발이 바닥에 닿았는지 확인하는 변수.
 
-    Transform cameraPoint;
+    Transform cameraPoint;                      // 카메라 포인트
+
+    ParticleSystem respawnEffeect;              // 리스폰 시 재생될 이펙트
 
     Vector3 savePoint = Vector3.zero;           // 재시작 시 되돌아갈 위치
     public Vector3 CurrentSavePoint
@@ -67,6 +69,7 @@ public class Player : MonoBehaviour
         animator = GetComponent<Animator>();
         mesh = transform.GetChild(0);
         cameraPoint = transform.GetChild(1);
+        respawnEffeect = GetComponentInChildren<ParticleSystem>();
 
         GroundSensor groundSensor = GetComponentInChildren<GroundSensor>();
         groundSensor.onGround += (isGround) => isGrounded = isGround;
@@ -156,8 +159,10 @@ public class Player : MonoBehaviour
 
     private void On_CameraInput(InputAction.CallbackContext _)
     {
-        transform.position = CurrentSavePoint;
+        Respawn();
     }
+
+    
 
     private void On_MouseDeltaInput(InputAction.CallbackContext context)
     {
@@ -218,5 +223,11 @@ public class Player : MonoBehaviour
     public void Die()
     {
         Debug.Log("사망");
+    }
+
+    private void Respawn()
+    {
+        transform.position = CurrentSavePoint;
+        respawnEffeect.Play();
     }
 }
