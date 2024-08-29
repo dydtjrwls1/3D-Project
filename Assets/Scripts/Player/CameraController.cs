@@ -19,7 +19,7 @@ public class CameraController : MonoBehaviour
     Vector3 nextZoom;                                   // mainCamera 의 다음 z 값 (줌 정도)
 
     Vector2 delta;                                      // 마우스 변동 값
-    float maxDeltaValue = 30.0f;                        // 마우스 변동 값 최대치
+    float maxDeltaValue = 30.0f;                        // 마우스 변동 값 최대치 (마우스의 변동값이 너무 클 경우 카메라가 튀는것 방지용)
    
 
     private void Awake()
@@ -64,7 +64,7 @@ public class CameraController : MonoBehaviour
     void UpdateRotation(Vector2 delta)
     {
         // 카메라의 다음 X 회전 (0 ~ 90 사이 값을 가진다)
-        float rotationX = Mathf.Clamp(cameraPoint.rotation.eulerAngles.x + (-delta.y), 0, 90.0f);
+        float rotationX = Mathf.Clamp(cameraPoint.rotation.eulerAngles.x + (-delta.y), 0f, 90f);
         float rotationY = cameraPoint.rotation.eulerAngles.y + delta.x; // 다음 Y 회전
 
         nextRotation = Quaternion.Euler(rotationX, rotationY, cameraPoint.rotation.eulerAngles.z);

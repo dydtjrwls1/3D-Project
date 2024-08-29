@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.OnScreen;
-
 
 public class Player : MonoBehaviour
 {
@@ -29,6 +26,16 @@ public class Player : MonoBehaviour
     bool isGrounded = true;                     // 현재 발이 바닥에 닿았는지 확인하는 변수.
 
     Transform cameraPoint;
+
+    Vector3 savePoint = Vector3.zero;           // 재시작 시 되돌아갈 위치
+    public Vector3 CurrentSavePoint
+    {
+        get => savePoint;
+        set
+        {
+            savePoint = value;
+        }
+    }
 
     // 점프가 가능한지 확인하는 프로퍼티
     bool IsJumpAvailabe => (isGrounded && (JumpCoolRemains < 0.0f));
@@ -149,7 +156,7 @@ public class Player : MonoBehaviour
 
     private void On_CameraInput(InputAction.CallbackContext _)
     {
-        Debug.Log(Quaternion.AngleAxis(cameraPoint.rotation.y, Vector3.up).eulerAngles);
+        transform.position = CurrentSavePoint;
     }
 
     private void On_MouseDeltaInput(InputAction.CallbackContext context)
