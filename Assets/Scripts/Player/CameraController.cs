@@ -10,6 +10,7 @@ public class CameraController : MonoBehaviour
     public float damp = 1.0f;
     [Range(0f, 2f)]
     public float rotateSpeed = 1.0f;
+
     public float zoomSpeed = 1.0f;
     public float maxZoom = 8.0f;
     public float minZoom = 3.0f;
@@ -21,7 +22,6 @@ public class CameraController : MonoBehaviour
     Quaternion nextRotation;                            // cameraPoint의 목표 회전 값
     Vector3 nextZoom;                                   // mainCamera 의 다음 z 값 (줌 정도)
 
-    Vector2 delta;                                      // 마우스 변동 값
     float maxDeltaValue = 30.0f;                        // 마우스 변동 값 최대치 (마우스의 변동값이 너무 클 경우 카메라가 튀는것 방지용)
    
 
@@ -36,9 +36,9 @@ public class CameraController : MonoBehaviour
     {
         // 마우스 움직임이 있을 때마다 마우스 위치 변경값을 delta 에 저장
         player.OnMouseInput += (delta) => {
-            this.delta.x = Mathf.Clamp(delta.x, -maxDeltaValue, maxDeltaValue);
-            this.delta.y = Mathf.Clamp(delta.y, -maxDeltaValue, maxDeltaValue);
-            UpdateRotation(this.delta); // 마우스 위치 변동이 있을때마다 nextRotation 값 갱신
+            delta.x = Mathf.Clamp(delta.x, -maxDeltaValue, maxDeltaValue);
+            delta.y = Mathf.Clamp(delta.y, -maxDeltaValue, maxDeltaValue);
+            UpdateRotation(delta); // 마우스 위치 변동이 있을때마다 nextRotation 값 갱신
         };
 
         player.OnScrollInput += (delta, canceled) =>
@@ -65,14 +65,17 @@ public class CameraController : MonoBehaviour
 
     private void LateUpdate()
     {
-        
         Zoom();
     }
 
+    /// <summary>
+    /// 다음 회전 방향을 갱신하는 함수
+    /// </summary>
+    /// <param name="delta">마우스 변동 값 (X, Y)</param>
     void UpdateRotation(Vector2 delta)
     {
-        // 카메라의 다음 X 회전 (0 ~ 90 사이 값을 가진다)
-        float rotationX = Mathf.Clamp(cameraPoint.rotation.eulerAngles.x + (-delta.y) * rotateSpeed, 0f, 90f);
+        // 카메라의 다음 X 회전 
+        float rotationX = Mathf.Clamp(cameraPoint.rotation.eulerAngles.x + (-delta.y) * rotateSpeed, 0, 90.0f);
         float rotationY = cameraPoint.rotation.eulerAngles.y + delta.x * rotateSpeed; // 다음 Y 회전
 
         nextRotation = Quaternion.Euler(rotationX, rotationY, cameraPoint.rotation.eulerAngles.z);
