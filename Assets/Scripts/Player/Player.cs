@@ -39,11 +39,38 @@ public class Player : MonoBehaviour
 
     // 메쉬
     Transform mesh;                             // 캐릭터의 Mesh 의 부모 트랜스폼
-    Vector2 moveInput;                          // 키보드 이동 인풋값
     bool isGrounded = true;                     // 현재 발이 바닥에 닿았는지 확인하는 변수.
 
     Transform cameraPoint;                      // 카메라 포인트
     float inputAngle;
+
+    int moveX;                                  // 키보드 방향키의 X 입력 값 (-1, 0, 1)
+    int moveY;                                  // 키보드 방향키의 Y 입력 값 (-1, 0, 1)
+
+    float InputAngle                            // 키보드 방향키의 입력 각도 (8방향)
+    {
+        get
+        {
+            if (moveX == 0 && moveY == 1)
+                return 0f;       // 위쪽
+            else if (moveX == 1 && moveY == 1)
+                return 45f;      // 오른쪽 위
+            else if (moveX == 1 && moveY == 0)
+                return 90f;      // 오른쪽
+            else if (moveX == 1 && moveY == -1)
+                return 135f;     // 오른쪽 아래
+            else if (moveX == 0 && moveY == -1)
+                return 180f;     // 아래쪽
+            else if (moveX == -1 && moveY == -1)
+                return 225f;     // 왼쪽 아래
+            else if (moveX == -1 && moveY == 0)
+                return 270f;     // 왼쪽
+            else if (moveX == -1 && moveY == 1)
+                return 315f;     // 왼쪽 위
+            else
+                return 0f;       // 기본값, 필요 시 수정 가능
+        }
+    }
 
     Quaternion NextRotation              // 다음 프레임에서의 회전 (CameraPoint 의 앞쪽방향 + 마우스 변동량)
     {
@@ -51,14 +78,9 @@ public class Player : MonoBehaviour
         {
             if(moved > 0.1f)
             {
+                float nextAngle = InputAngle + cameraPoint.eulerAngles.y; // 키보드 입력 각 + 현재 카메라의 Y 축 회전
 
-                Vector3 inputToVector3 = new Vector3(moveInput.x, 0, moveInput.y);
-                Quaternion inputDirection = Quaternion.LookRotation(inputToVector3);
-                Quaternion cameraDirection = Quaternion.LookRotation(cameraPoint.forward);
-
-                Quaternion delta = inputDirection * cameraDirection;
-
-                return Quaternion.Euler(0, delta.eulerAngles.y, 0);
+                return Quaternion.Euler(0, nextAngle, 0);
             }
             else
             {
@@ -68,34 +90,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    float InputAngle
-    {
-        get
-        {
-            float angle;
-
-            if (moveInput.x == 0 && moveInput.y == 1)
-                angle = 0f;       // 위쪽
-            else if (moveInput.x == 1 && moveInput.y == 1)
-                angle = 45f;      // 오른쪽 위
-            else if (moveInput.x == 1 && moveInput.y == 0)
-                angle = 90f;      // 오른쪽
-            else if (moveInput.x == 1 && moveInput.y == -1)
-                angle = 135f;     // 오른쪽 아래
-            else if (moveInput.x == 0 && moveInput.y == -1)
-                angle = 180f;     // 아래쪽
-            else if (moveInput.x == -1 && moveInput.y == -1)
-                angle = 225f;     // 왼쪽 아래
-            else if (moveInput.x == -1 && moveInput.y == 0)
-                angle = 270f;     // 왼쪽
-            else if (moveInput.x == -1 && moveInput.y == 1)
-                angle = 315f;     // 왼쪽 위
-            else
-                angle = 0f;       // 기본값, 필요 시 수정 가능
-
-            return angle;
-        }
-    }
+    
     
     // 세이브 포인트 관련
     ParticleSystem respawnEffeect;              // 리스폰 시 재생될 이펙트
@@ -241,19 +236,8 @@ public class Player : MonoBehaviour
     void SetInput(Vector2 input, bool isMove)
     {
         moved = isMove ? 1.0f : 0.0f;
-        moveInput = input;
-        // nextRotate = Vector3.SignedAngle(Vector3.forward, new Vector3(moveInput.x, 0, moveInput.y), Vector3.up);
-
-        if (input.x == 1 && input.y == 0)
-            inputAngle = 0f;       // 오른쪽
-        else if (input.x == -1 &&input.y == 0)
-            inputAngle = 180f;     // 왼쪽
-        else if (input.x == 0 && input.y == 1)
-            inputAngle = 90f;      // 위쪽
-        else if (input.x == 0 && input.y == -1)
-            inputAngle = 270f;     // 아래쪽
-        else
-            inputAngle = 0f;       // 기본값 (0, 0)인 경우에 해당, 필요 시 처리 방법에 따라 수정 가능
+        moveX = (int)input.x;
+        moveY = (int)input.y;
 
         animator.SetBool(IsMove_Hash, isMove);
     }
