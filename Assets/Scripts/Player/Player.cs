@@ -139,7 +139,7 @@ public class Player : MonoBehaviour
     {
         rotationDelta = Quaternion.AngleAxis(cameraPoint.rotation.eulerAngles.y, Vector3.up) * Quaternion.AngleAxis(nextRotate, Vector3.up);
         Quaternion nextRotation = moved > 0.1f ? rotationDelta : mesh.rotation;                                       // 움직였으면 다음 회전이고 움직이지 않았으면 기존 회전을 유지하는 변수
-        mesh.rotation = Quaternion.Slerp(mesh.rotation, nextRotation, Time.deltaTime * rotateSpeed);                  // player mesh 를 카메라 방향에 맞춰서 회전
+        mesh.rotation = Quaternion.Slerp(mesh.rotation, nextRotation, Time.fixedDeltaTime * rotateSpeed);                  // player mesh 를 카메라 방향에 맞춰서 회전
     }
 
     private void On_MoveInput(InputAction.CallbackContext context)

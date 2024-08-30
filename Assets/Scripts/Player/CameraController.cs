@@ -6,7 +6,10 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    public float cameraSpeed = 5.0f;
+    [Range(0f, 1f)]
+    public float damp = 1.0f;
+    [Range(0f, 2f)]
+    public float rotateSpeed = 1.0f;
     public float zoomSpeed = 1.0f;
     public float maxZoom = 8.0f;
     public float minZoom = 3.0f;
@@ -55,29 +58,37 @@ public class CameraController : MonoBehaviour
         nextZoom = mainCamera.localPosition;
     }
 
-    private void LateUpdate()
+    private void FixedUpdate()
     {
         CameraRotation();
+    }
+
+    private void LateUpdate()
+    {
+        
         Zoom();
     }
 
     void UpdateRotation(Vector2 delta)
     {
         // 카메라의 다음 X 회전 (0 ~ 90 사이 값을 가진다)
-        float rotationX = Mathf.Clamp(cameraPoint.rotation.eulerAngles.x + (-delta.y), 0f, 90f);
-        float rotationY = cameraPoint.rotation.eulerAngles.y + delta.x; // 다음 Y 회전
+        float rotationX = Mathf.Clamp(cameraPoint.rotation.eulerAngles.x + (-delta.y) * rotateSpeed, 0f, 90f);
+        float rotationY = cameraPoint.rotation.eulerAngles.y + delta.x * rotateSpeed; // 다음 Y 회전
 
         nextRotation = Quaternion.Euler(rotationX, rotationY, cameraPoint.rotation.eulerAngles.z);
     }
 
     void CameraRotation()
     {
-        cameraPoint.rotation = Quaternion.Slerp(cameraPoint.rotation, nextRotation, Time.deltaTime * cameraSpeed);
-        cameraPoint.rotation = Quaternion.Euler(cameraPoint.rotation.eulerAngles.x, cameraPoint.rotation.eulerAngles.y, 0.0f); // Slerp 로 변동하는 z 값 고정
+        cameraPoint.rotation = Quaternion.Slerp(cameraPoint.rotation, nextRotation, Time.fixedDeltaTime + damp);
+        cameraPoint.rotation = Quaternion.Euler(
+            cameraPoint.rotation.eulerAngles.x,
+            cameraPoint.rotation.eulerAngles.y,
+            0);
     }
 
     void Zoom()
     {
-        mainCamera.localPosition = Vector3.Slerp(mainCamera.localPosition, nextZoom, Time.deltaTime * zoomSpeed);
+        mainCamera.localPosition = nextZoom;
     }
 }
