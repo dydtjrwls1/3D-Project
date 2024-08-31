@@ -231,6 +231,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7603195556608663264, guid: a46f30fa81fd9fd4b9c4a4a5295b1532, type: 3}
+      propertyPath: Damping.x
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -617,9 +621,9 @@ PrefabInstance:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 542474359}
   - {fileID: 892415305}
   - {fileID: 1115938892}
   - {fileID: 930698370}
   - {fileID: 2013612770}
-  - {fileID: 542474359}
   - {fileID: 584696089}

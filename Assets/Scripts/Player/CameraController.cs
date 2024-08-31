@@ -40,22 +40,6 @@ public class CameraController : MonoBehaviour
             delta.y = Mathf.Clamp(delta.y, -maxDeltaValue, maxDeltaValue);
             UpdateRotation(delta); // 마우스 위치 변동이 있을때마다 nextRotation 값 갱신
         };
-
-        player.OnScrollInput += (delta, canceled) =>
-        {
-            if (canceled) // 스크롤 변동 종료 시 nextzoom 은 현재 위치
-            {
-                nextZoom = mainCamera.localPosition;
-                return;
-            }
-                
-            float input = delta > 0.0f ? 1.0f : -1.0f;  // 스크롤 방향이 위면 1 아래면 -1
-            float nextZ = Mathf.Clamp(mainCamera.localPosition.z + input, -maxZoom, -minZoom);   // 줌값의 최대 최소값으로 clamp
-
-            nextZoom = new Vector3(mainCamera.localPosition.x, mainCamera.localPosition.y, nextZ);
-        };
-
-        nextZoom = mainCamera.localPosition;
     }
 
     private void FixedUpdate()
@@ -65,7 +49,7 @@ public class CameraController : MonoBehaviour
 
     private void LateUpdate()
     {
-        Zoom();
+        // Zoom();
     }
 
     /// <summary>
