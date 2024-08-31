@@ -177,12 +177,9 @@ public class Player : MonoBehaviour
     /// </summary>
     private void Movement(float deltaTime)
     {
-        Vector3 direction = NextRotation * transform.forward; // 캐릭터가 다음 프레임에 이동하게 될 방향
+        Vector3 forceDirection = NextRotation * transform.forward * moveSpeed * moved;  // 캐릭터가 입력값에 대응하는 힘을 받을 방향
 
-        // 새 이동할 위치 : 현재위치 + 초당 moveSpeed의 속도로, 오브젝트의 앞 쪽 방향을 기준으로 전진/후진/정지
-        Vector3 position = rb.position + deltaTime * moveSpeed * moved * (direction);
-
-        rb.MovePosition(position);
+        rb.velocity = forceDirection + Vector3.up * rb.velocity.y;                      // 점프할 때 velocity가 덮어 씌워지는것을 방지하기 위해 현재 velocity의 y값은 유지해준다.
     }
 
     void RotateMesh()
