@@ -275,4 +275,9 @@ public class Player : MonoBehaviour
         transform.position = CurrentSavePoint;
         respawnEffeect.Play();
     }
+
+    public void MaintainVelocity()
+    {
+        rb.velocity = rb.velocity;
+    }
 }
