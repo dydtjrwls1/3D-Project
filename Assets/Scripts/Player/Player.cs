@@ -137,7 +137,7 @@ public class Player : MonoBehaviour
         inputActions.Player.Move.canceled += On_MoveInput;
         inputActions.Player.Jump.performed += On_JumpInput;
         inputActions.Player.Use.performed += On_UseInput;
-        inputActions.Player.Camera.performed += On_CameraInput;
+        inputActions.Player.Camera.performed += On_RespawnInput;
         inputActions.Player.MousePoint.performed += On_MouseDeltaInput;
         inputActions.Player.Zoom.performed += On_ZoomInput;
     }
@@ -148,7 +148,7 @@ public class Player : MonoBehaviour
     {
         inputActions.Player.Zoom.performed -= On_ZoomInput;
         inputActions.Player.MousePoint.performed -= On_MouseDeltaInput;
-        inputActions.Player.Camera.performed -= On_CameraInput;
+        inputActions.Player.Camera.performed -= On_RespawnInput;
         inputActions.Player.Use.performed -= On_UseInput;
         inputActions.Player.Jump.performed -= On_JumpInput;
         inputActions.Player.Move.canceled -= On_MoveInput;
@@ -203,12 +203,10 @@ public class Player : MonoBehaviour
         Use();
     }
 
-    private void On_CameraInput(InputAction.CallbackContext _)
+    private void On_RespawnInput(InputAction.CallbackContext _)
     {
         Respawn();
     }
-
-    
 
     private void On_MouseDeltaInput(InputAction.CallbackContext context)
     {
@@ -273,6 +271,7 @@ public class Player : MonoBehaviour
 
     private void Respawn()
     {
+        rb.velocity = Vector3.zero;
         transform.position = CurrentSavePoint;
         respawnEffeect.Play();
     }
