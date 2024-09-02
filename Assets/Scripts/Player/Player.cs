@@ -8,7 +8,6 @@ public class Player : MonoBehaviour
     public float moveSpeed = 5.0f;              // 이동 속도
     public float rotateSpeed = 180.0f;          // 플레이어 메쉬 회전 속도
     float moved = 0.0f;                         // 움직임 여부 결정 변수
-    float nextRotate;                           // 방향키 눌렸을 때 다음 회전의 회전 값
 
     // 점프
     public float jumpForce = 5.0f;              // 점프 세기
@@ -42,7 +41,6 @@ public class Player : MonoBehaviour
     bool isGrounded = true;                     // 현재 발이 바닥에 닿았는지 확인하는 변수.
 
     Transform cameraPoint;                      // 카메라 포인트
-    float inputAngle;
 
     int moveX;                                  // 키보드 방향키의 X 입력 값 (-1, 0, 1)
     int moveY;                                  // 키보드 방향키의 Y 입력 값 (-1, 0, 1)
@@ -104,7 +102,10 @@ public class Player : MonoBehaviour
             savePoint = value;
         }
     }
-   
+
+    bool isHit = false;
+
+
     // 애니메이션 해쉬 값
     readonly int IsMove_Hash = Animator.StringToHash("IsMove");
     readonly int IsUse_Hash = Animator.StringToHash("Use");
@@ -156,10 +157,17 @@ public class Player : MonoBehaviour
         inputActions.Player.Disable();
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+    }
+
     private void FixedUpdate()
     {
-        Movement(Time.fixedDeltaTime);
-        RotateMesh();
+        if (!isHit)
+        {
+            Movement(Time.fixedDeltaTime);
+            RotateMesh();
+        }
     }
 
     private void Update()

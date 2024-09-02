@@ -36,6 +36,12 @@ public class Trap_Push : TrapBase
         hinge.localRotation = lookTarget;
 
         plate.position = transform.position;
+
+        Player player = other.GetComponent<Player>();
+        Rigidbody rb = other.GetComponent<Rigidbody>();
+
+        rb?.AddForce(lookTarget * new Vector3(0, 1, 1) * force, ForceMode.Impulse);
+
     }
 
     IEnumerator RotateHinge()
