@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class Trap_Push : TrapBase, IHit
+public class Trap_Push : TrapBase
 {
     public float force = 5.0f;
 
@@ -13,8 +13,6 @@ public class Trap_Push : TrapBase, IHit
     float flipTime = 0.3f;
     float flipRotate = 90.0f;
     float FlipRotate => flipRotate / flipTime;
-
-    public bool IsHit => throw new System.NotImplementedException();
 
     private void Awake()
     {
@@ -55,10 +53,5 @@ public class Trap_Push : TrapBase, IHit
             hinge.Rotate(Vector3.right * Time.deltaTime * FlipRotate, Space.Self);
             yield return null;
         }
-    }
-
-    public void OnHit()
-    {
-        throw new System.NotImplementedException();
     }
 }

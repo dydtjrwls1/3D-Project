@@ -104,20 +104,21 @@ public class Player : MonoBehaviour
         }
     }
 
-    bool isHit = false;
+    // 캐리거 피격 관련
+    public float hitForce = 5.0f;
 
-    public bool IsHit
-    {
-        set
-        {
-            isHit = value;
-        }
-    }
+    bool isHit = false;                         // 피격 당했는지 여부
+
+    float hitCoolDown = 1.0f;                   // 피격 쿨타임 (초당 최대 1회 피격 가능)
+    float remainsHitCoolDown;                   // 남은 피격 쿨타임
+
+    bool CanHit => remainsHitCoolDown < 0f;     // 피격 가능 여부
 
     // 애니메이션 해쉬 값
     readonly int IsMove_Hash = Animator.StringToHash("IsMove");
     readonly int IsUse_Hash = Animator.StringToHash("Use");
     readonly int Jump_Hash = Animator.StringToHash("Jump");
+    readonly int Hit_Hash = Animator.StringToHash("Hit");
 
 
 
@@ -176,7 +177,7 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        
+        remainsHitCoolDown -= Time.deltaTime;
         JumpCoolRemains -= Time.deltaTime; // 점프 쿨타임 줄이기
     }
 
@@ -185,12 +186,24 @@ public class Player : MonoBehaviour
         
     }
 
+    int hitCount = 0;
+
     private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.CompareTag("Ground") && isHit)
+        {
+            StopAllCoroutines();
+            StartCoroutine(RecoverFromHit());
+        }
+    }
+
+    private void OnCollisionStay(Collision collision)
     {
         IHit hitInterface = collision.gameObject.GetComponent<IHit>();
         if (hitInterface != null)
         {
-            Hit();
+            Vector3 hitPoint = collision.GetContact(0).point; // 접촉한 지점의 벡터
+            Hit(hitPoint);
         }
     }
 
@@ -298,17 +311,23 @@ public class Player : MonoBehaviour
         respawnEffect.Play();
     }
 
-    public void MaintainVelocity()
-    {
-        rb.velocity = rb.velocity;
-    }
-
     // 맞았을 때 실행될 함수
-    void Hit()
+    void Hit(Vector3 hitPoint)
     {
+        if (CanHit)
+        {
+            remainsHitCoolDown = hitCoolDown;
+            isHit = true;
 
+            Quaternion lookHitPos = Quaternion.LookRotation(hitPoint);
+            mesh.rotation = lookHitPos; // 플레이어의 mesh 가 접촉한 지점을 바라본다
+
+            rb.AddForce((transform.up + -(lookHitPos * transform.forward)) * hitForce, ForceMode.Impulse); // 접촉점의 반대방향으로 플레이어가 날라간다
+            animator.SetTrigger(Hit_Hash);
+        }
     }
 
+    // 맞고 땅에 떨어졌을때 원래 상태로 돌아오는 코루틴
     IEnumerator RecoverFromHit()
     {
         float elapsedTime = 0.0f;
@@ -318,6 +337,7 @@ public class Player : MonoBehaviour
             elapsedTime += Time.deltaTime;
             yield return null;
         }
+
         isHit = false;
     }
 }

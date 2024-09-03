@@ -15,7 +15,7 @@ public class GroundSensor : MonoBehaviour
     {
         groundCount++;
 
-        if (groundCount > 0)  // 트리거에 하나 이상의 물체가 닿았으면 true로 알림
+        if (other.CompareTag("Ground") && groundCount > 0)  // 트리거에 하나 이상의 물체가 닿았으면 true로 알림
         {
             onGround?.Invoke(true);
         }
@@ -27,7 +27,7 @@ public class GroundSensor : MonoBehaviour
     {
         groundCount--;
 
-        if(groundCount < 1) // 트리거에 들어있는 물체가 없을 때 false 로 알림
+        if(other.CompareTag("Ground") && groundCount < 1) // 트리거에 들어있는 물체가 없을 때 false 로 알림
         {
             onGround?.Invoke(false);
             groundCount = 0;
