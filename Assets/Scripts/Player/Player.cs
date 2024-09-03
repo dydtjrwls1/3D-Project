@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -91,7 +92,7 @@ public class Player : MonoBehaviour
     
     
     // 세이브 포인트 관련
-    ParticleSystem respawnEffeect;              // 리스폰 시 재생될 이펙트
+    ParticleSystem respawnEffect;              // 리스폰 시 재생될 이펙트
     Vector3 savePoint = Vector3.zero;           // 리스폰 시 되돌아갈 위치
     
     public Vector3 CurrentSavePoint             // 현재 세이브 포인트 위치
@@ -105,6 +106,13 @@ public class Player : MonoBehaviour
 
     bool isHit = false;
 
+    public bool IsHit
+    {
+        set
+        {
+            isHit = value;
+        }
+    }
 
     // 애니메이션 해쉬 값
     readonly int IsMove_Hash = Animator.StringToHash("IsMove");
@@ -120,7 +128,7 @@ public class Player : MonoBehaviour
         animator = GetComponent<Animator>();
         mesh = transform.GetChild(0);
         cameraPoint = transform.GetChild(1);
-        respawnEffeect = GetComponentInChildren<ParticleSystem>();
+        respawnEffect = GetComponentInChildren<ParticleSystem>();
 
         GroundSensor groundSensor = GetComponentInChildren<GroundSensor>();
         groundSensor.onGround += (isGround) => isGrounded = isGround;
@@ -157,10 +165,6 @@ public class Player : MonoBehaviour
         inputActions.Player.Disable();
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-    }
-
     private void FixedUpdate()
     {
         if (!isHit)
@@ -179,6 +183,15 @@ public class Player : MonoBehaviour
     private void LateUpdate()
     {
         
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        IHit hitInterface = collision.gameObject.GetComponent<IHit>();
+        if (hitInterface != null)
+        {
+            Hit();
+        }
     }
 
     /// 이동 및 회전처리
@@ -277,15 +290,34 @@ public class Player : MonoBehaviour
         Debug.Log("사망");
     }
 
+    // 리스폰 시 실행할 함수
     private void Respawn()
     {
         rb.velocity = Vector3.zero;
         transform.position = CurrentSavePoint;
-        respawnEffeect.Play();
+        respawnEffect.Play();
     }
 
     public void MaintainVelocity()
     {
         rb.velocity = rb.velocity;
+    }
+
+    // 맞았을 때 실행될 함수
+    void Hit()
+    {
+
+    }
+
+    IEnumerator RecoverFromHit()
+    {
+        float elapsedTime = 0.0f;
+            
+        while(elapsedTime < 1.0f)
+        {
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        isHit = false;
     }
 }
