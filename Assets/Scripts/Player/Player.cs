@@ -7,6 +7,7 @@ public class Player : MonoBehaviour
 {
     // 이동
     public float moveSpeed = 5.0f;              // 이동 속도
+    public float speedThreshold = 10.0f;
     public float rotateSpeed = 180.0f;          // 플레이어 메쉬 회전 속도
     float moved = 0.0f;                         // 움직임 여부 결정 변수
 
@@ -211,9 +212,11 @@ public class Player : MonoBehaviour
     /// </summary>
     private void Movement(float deltaTime)
     {
-        Vector3 forceDirection = NextRotation * transform.forward * moveSpeed * moved;  // 캐릭터가 입력값에 대응하는 힘을 받을 방향
+        Vector3 forceDirection = NextRotation * transform.forward * moved;  // 캐릭터가 입력값에 대응하는 힘을 받을 방향
 
-        rb.velocity = forceDirection + Vector3.up * rb.velocity.y;                      // 점프할 때 velocity가 덮어 씌워지는것을 방지하기 위해 현재 velocity의 y값은 유지해준다.
+        rb.MovePosition(rb.position + forceDirection * moveSpeed * deltaTime);
+
+        //rb.velocity = forceDirection + Vector3.up * rb.velocity.y;                      // 점프할 때 velocity가 덮어 씌워지는것을 방지하기 위해 현재 velocity의 y값은 유지해준다.
     }
 
     void RotateMesh()
@@ -268,6 +271,7 @@ public class Player : MonoBehaviour
         moveX = (int)input.x;
         moveY = (int)input.y;
 
+        Debug.Log(isHit);
         animator.SetBool(IsMove_Hash, isMove);
     }
 
@@ -336,6 +340,7 @@ public class Player : MonoBehaviour
         {
             elapsedTime += Time.deltaTime;
             yield return null;
+            
         }
 
         isHit = false;

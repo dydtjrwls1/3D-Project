@@ -378,8 +378,20 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7343510551189930330, guid: a46f30fa81fd9fd4b9c4a4a5295b1532, type: 3}
+      propertyPath: m_Drag
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 8165369256659894258, guid: a46f30fa81fd9fd4b9c4a4a5295b1532, type: 3}
       propertyPath: hitForce
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8165369256659894258, guid: a46f30fa81fd9fd4b9c4a4a5295b1532, type: 3}
+      propertyPath: moveSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8165369256659894258, guid: a46f30fa81fd9fd4b9c4a4a5295b1532, type: 3}
+      propertyPath: speedThreshold
       value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
