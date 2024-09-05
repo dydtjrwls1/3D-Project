@@ -106,8 +106,6 @@ public class Player : MonoBehaviour
     }
 
     // 캐리거 피격 관련
-    public float hitForce = 5.0f;
-
     bool isHit = false;                         // 피격 당했는지 여부
 
     float hitCoolDown = 1.0f;                   // 피격 쿨타임 (초당 최대 1회 피격 가능)
@@ -187,8 +185,6 @@ public class Player : MonoBehaviour
         
     }
 
-    int hitCount = 0;
-
     private void OnCollisionEnter(Collision collision)
     {
         if(collision.gameObject.CompareTag("Ground") && isHit)
@@ -196,15 +192,13 @@ public class Player : MonoBehaviour
             StopAllCoroutines();
             StartCoroutine(RecoverFromHit());
         }
-    }
 
-    private void OnCollisionStay(Collision collision)
-    {
-        IHit hitInterface = collision.gameObject.GetComponent<IHit>();
-        if (hitInterface != null)
+        IHit hitInterface = Util.FindInterface<IHit>(collision.gameObject);
+        if (hitInterface != null && !isHit)
         {
-            Vector3 hitPoint = collision.GetContact(0).point; // 접촉한 지점의 벡터
-            Hit(hitPoint);
+            // Vector3 hitPoint = collision.GetContact(0).point; // 접촉한 지점의 벡터
+            Hit();
+            hitInterface.OnHit(rb, collision);
         }
     }
 
@@ -271,7 +265,7 @@ public class Player : MonoBehaviour
         moveX = (int)input.x;
         moveY = (int)input.y;
 
-        Debug.Log(isHit);
+        // Debug.Log(isHit);
         animator.SetBool(IsMove_Hash, isMove);
     }
 
@@ -316,17 +310,16 @@ public class Player : MonoBehaviour
     }
 
     // 맞았을 때 실행될 함수
-    void Hit(Vector3 hitPoint)
+    void Hit()
     {
         if (CanHit)
         {
             remainsHitCoolDown = hitCoolDown;
             isHit = true;
 
-            Quaternion lookHitPos = Quaternion.LookRotation(hitPoint);
-            mesh.rotation = lookHitPos; // 플레이어의 mesh 가 접촉한 지점을 바라본다
+            // Quaternion lookHitPos = Quaternion.LookRotation(hitPoint);
+            // mesh.rotation = lookHitPos; // 플레이어의 mesh 가 접촉한 지점을 바라본다
 
-            rb.AddForce((transform.up + -(lookHitPos * transform.forward)) * hitForce, ForceMode.Impulse); // 접촉점의 반대방향으로 플레이어가 날라간다
             animator.SetTrigger(Hit_Hash);
         }
     }

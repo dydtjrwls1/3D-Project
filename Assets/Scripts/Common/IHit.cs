@@ -1,5 +1,7 @@
-﻿public interface IHit
+﻿using UnityEngine;
+
+public interface IHit
 {
-    void OnHit();
+    void OnHit(Rigidbody rb, Collision coll);
 }
 
