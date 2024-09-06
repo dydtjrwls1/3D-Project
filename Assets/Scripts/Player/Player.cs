@@ -131,7 +131,11 @@ public class Player : MonoBehaviour
         respawnEffect = GetComponentInChildren<ParticleSystem>();
 
         GroundSensor groundSensor = GetComponentInChildren<GroundSensor>();
-        groundSensor.onGround += (isGround) => isGrounded = isGround;
+        groundSensor.onGround += (isGround) => 
+        { 
+            isGrounded = isGround;
+            Debug.Log(isGround);
+        };
     }
 
     private void Start()
@@ -193,6 +197,8 @@ public class Player : MonoBehaviour
             StartCoroutine(RecoverFromHit());
         }
 
+        Debug.Log(collision.gameObject.name);
+
         IHit hitInterface = Util.FindInterface<IHit>(collision.gameObject);
         if (hitInterface != null && !isHit)
         {
@@ -208,9 +214,11 @@ public class Player : MonoBehaviour
     {
         Vector3 forceDirection = NextRotation * transform.forward * moved;  // 캐릭터가 입력값에 대응하는 힘을 받을 방향
 
-        rb.MovePosition(rb.position + forceDirection * moveSpeed * deltaTime);
+        //rb.AddForce(forceDirection * moveSpeed * 2.0f, ForceMode.Force);
 
-        //rb.velocity = forceDirection + Vector3.up * rb.velocity.y;                      // 점프할 때 velocity가 덮어 씌워지는것을 방지하기 위해 현재 velocity의 y값은 유지해준다.
+        //rb.MovePosition(rb.position + forceDirection * moveSpeed * deltaTime);
+
+        rb.velocity = forceDirection  * moveSpeed + Vector3.up * rb.velocity.y;                      // 점프할 때 velocity가 덮어 씌워지는것을 방지하기 위해 현재 velocity의 y값은 유지해준다.
     }
 
     void RotateMesh()
