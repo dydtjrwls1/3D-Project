@@ -1,15 +1,20 @@
 ﻿using Cinemachine;
+using System.ComponentModel.Design.Serialization;
 using UnityEngine;
 
 public class ChargingState : IPlayerState
 {
     Transform body;
+    Transform root;
+    Transform cameraPoint;
     CinemachineVirtualCamera vcam;
     Cinemachine3rdPersonFollow framingTransposer;
 
     public void EnterState(PlayerController player)
     {
         body = player.PlayerBody;
+        root = player.root;
+        cameraPoint = player.cameraPoint;
         vcam = player.PlayerMainCam;
         framingTransposer = vcam.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
         if(framingTransposer == null)
@@ -20,12 +25,14 @@ public class ChargingState : IPlayerState
 
     public void ExitState(PlayerController player)
     {
-        //throw new System.NotImplementedException();
+        framingTransposer.CameraDistance = player.defaultCameraDistance;
+        body.localRotation = Quaternion.identity;
     }
 
     public void UpdateState(PlayerController player)
     {
-        body.Rotate(Time.deltaTime * player.CurrentRotateSpeed * Vector3.up);
+        root.localRotation = Quaternion.Euler(Vector3.up * cameraPoint.localEulerAngles.y);
+        body.Rotate(Time.deltaTime * player.CurrentRotateSpeed * Vector3.up, Space.Self);
         framingTransposer.CameraDistance = player.CurrentZoomDistance;
     }
 }

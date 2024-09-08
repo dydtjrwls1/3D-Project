@@ -11,7 +11,10 @@ public class PlayerController : MonoBehaviour
     CinemachineVirtualCamera vcam;
     PlayerInputActions inputAction;
     Rigidbody rb;
+
     public Transform body;
+    public Transform cameraPoint;
+    public Transform root;
 
     IPlayerState currentState;
 
@@ -28,6 +31,7 @@ public class PlayerController : MonoBehaviour
     public float zoomDistance = 4.0f;
 
     public float fireForce = 5.0f;
+    public float cameraSpeed = 30.0f;
 
     // Changing State 관련 프로퍼티
     public CinemachineVirtualCamera PlayerMainCam => vcam;
@@ -59,8 +63,10 @@ public class PlayerController : MonoBehaviour
         inputAction.Player.Enable();
         inputAction.Player.Click.performed += On_Click;
         inputAction.Player.Click.canceled += Off_Click;
-
+        inputAction.Player.MousePoint.performed += On_MouseMove;
     }
+
+    
 
     private void OnDisable()
     {
@@ -96,5 +102,13 @@ public class PlayerController : MonoBehaviour
     {
         SetState(new IdleState());
         rb.AddForce((transform.up + transform.forward) * CurrentChargeDelta * fireForce, ForceMode.Impulse);
+    }
+
+    private void On_MouseMove(InputAction.CallbackContext context)
+    {
+        Vector2 delta = context.ReadValue<Vector2>();
+        float nextXRotation = Mathf.Clamp(cameraPoint.localEulerAngles.x + (-delta.y) * Time.deltaTime * cameraSpeed, 0.0f, 90.0f);
+        float nextYRotation = cameraPoint.localEulerAngles.y + delta.x * Time.deltaTime * cameraSpeed;
+        cameraPoint.eulerAngles = new Vector3(nextXRotation, nextYRotation, cameraPoint.localEulerAngles.z);
     }
 }
