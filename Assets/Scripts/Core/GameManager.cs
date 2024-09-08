@@ -4,19 +4,19 @@ using UnityEngine;
 
 public class GameManager : SingleTon<GameManager>
 {
-    Player player;
+    PlayerController player;
 
-    public Player Player
+    public PlayerController Player
     {
         get => player;
     }
 
     protected override void OnInitialize()
     {
-        player = FindAnyObjectByType<Player>();
+        player = FindAnyObjectByType<PlayerController>();
         if (player == null) 
         {
-            Debug.LogWarning("Player가 Scnen에 없습니다.");
+            Debug.LogWarning("Player가 Scene에 없습니다.");
         }
     }
 }

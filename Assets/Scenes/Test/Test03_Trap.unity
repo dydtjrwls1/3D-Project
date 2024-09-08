@@ -760,41 +760,42 @@ MonoBehaviour:
   minRotateSpeed: 120
   maxRotateSpeed: 1440
   rotateDuration: 5
-  bodyAnimationCurve:
+  chargeAnimationCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0.25291047
-      outSlope: 0.25291047
+      inSlope: 0.256319
+      outSlope: 0.256319
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.35293227
+      outWeight: 0.29931158
     - serializedVersion: 3
-      time: 0.55487514
-      value: 0.15408975
-      inSlope: 0.30214125
-      outSlope: 0.30214125
+      time: 0.6169698
+      value: 0.19237898
+      inSlope: 0.37547702
+      outSlope: 0.37547702
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.24937882
-      outWeight: 0.48516315
+      inWeight: 0.2884291
+      outWeight: 0.9205429
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 2.3113198
-      outSlope: 2.3113198
+      inSlope: 3.6084871
+      outSlope: 3.6084871
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.11232806
+      inWeight: 0.12713155
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
   defaultCameraDistance: 6
   zoomDistance: 2
+  fireForce: 7
 --- !u!54 &2093668465
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -820,7 +821,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 80
   m_CollisionDetection: 0
 --- !u!135 &2093668466
 SphereCollider:
@@ -843,6 +844,63 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.35
   m_Center: {x: 0, y: 0.35, z: 0}
+--- !u!1001 &3548548611305906714
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2857995119898217846, guid: b25c38fc518ef8346a298bd86d8421bf, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2857995119898217846, guid: b25c38fc518ef8346a298bd86d8421bf, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2857995119898217846, guid: b25c38fc518ef8346a298bd86d8421bf, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2857995119898217846, guid: b25c38fc518ef8346a298bd86d8421bf, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2857995119898217846, guid: b25c38fc518ef8346a298bd86d8421bf, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2857995119898217846, guid: b25c38fc518ef8346a298bd86d8421bf, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2857995119898217846, guid: b25c38fc518ef8346a298bd86d8421bf, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2857995119898217846, guid: b25c38fc518ef8346a298bd86d8421bf, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2857995119898217846, guid: b25c38fc518ef8346a298bd86d8421bf, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2857995119898217846, guid: b25c38fc518ef8346a298bd86d8421bf, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9213745638095778496, guid: b25c38fc518ef8346a298bd86d8421bf, type: 3}
+      propertyPath: m_Name
+      value: GameManager
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: b25c38fc518ef8346a298bd86d8421bf, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -853,3 +911,4 @@ SceneRoots:
   - {fileID: 1762540033}
   - {fileID: 146082562}
   - {fileID: 1090395441}
+  - {fileID: 3548548611305906714}
