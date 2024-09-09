@@ -27,6 +27,7 @@ public class ChargingState : IPlayerState
     {
         framingTransposer.CameraDistance = player.defaultCameraDistance;
         body.localRotation = Quaternion.identity;
+        player.Animator.enabled = true;
     }
 
     public void UpdateState(PlayerController player)
@@ -50,5 +51,24 @@ public class IdleState : IPlayerState
 
     public void UpdateState(PlayerController player)
     {
+    }
+}
+
+public class FireState : IPlayerState
+{
+    Transform root;
+
+    public void EnterState(PlayerController player)
+    {
+        root = player.root;
+    }
+
+    public void ExitState(PlayerController player)
+    {
+    }
+
+    public void UpdateState(PlayerController player)
+    {
+        root.rotation = Quaternion.Euler(Vector3.right * player.CurrentYVelocity);
     }
 }

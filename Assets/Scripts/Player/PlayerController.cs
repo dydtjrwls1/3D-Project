@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     CinemachineVirtualCamera vcam;
     PlayerInputActions inputAction;
     Rigidbody rb;
+    Animator animator;
 
     public Transform body;
     public Transform cameraPoint;
@@ -36,6 +37,8 @@ public class PlayerController : MonoBehaviour
     // Changing State 관련 프로퍼티
     public CinemachineVirtualCamera PlayerMainCam => vcam;
     public Transform PlayerBody => body;
+    public Rigidbody PlayerRb => rb;
+    public Animator Animator => animator;
 
     // BodyAnimationCurve의 현재 값
     public float CurrentChargeDelta => chargeAnimationCurve.Evaluate(elapsedTime / rotateDuration);
@@ -46,11 +49,17 @@ public class PlayerController : MonoBehaviour
     // BodyAnimationCurve의 현재 값에 따른 카메라 줌 거리
     public float CurrentZoomDistance => defaultCameraDistance - zoomDistance * CurrentChargeDelta;
 
+    public float CurrentYVelocity => rb.velocity.y;
+
+    readonly int Fire_Hash = Animator.StringToHash("Fire");
+
+
     private void Awake()
     {
         inputAction = new PlayerInputActions();
         vcam = GetComponentInChildren<CinemachineVirtualCamera>();
         rb = GetComponentInChildren<Rigidbody>();
+        animator = GetComponentInChildren<Animator>();
     }
 
     private void Start()
@@ -75,6 +84,14 @@ public class PlayerController : MonoBehaviour
         inputAction.Player.Disable();
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+
+        }
+    }
+
     private void Update()
     {
         elapsedTime += Time.deltaTime;
@@ -94,21 +111,27 @@ public class PlayerController : MonoBehaviour
 
     private void On_Click(InputAction.CallbackContext context)
     {
+        animator.enabled = false;
         elapsedTime = 0.0f;
         SetState(new ChargingState());
     }
 
     private void Off_Click(InputAction.CallbackContext context)
     {
-        SetState(new IdleState());
+        SetState(new FireState());
+        animator.SetBool(Fire_Hash, true);
         rb.AddForce((transform.up + transform.forward) * CurrentChargeDelta * fireForce, ForceMode.Impulse);
     }
 
     private void On_MouseMove(InputAction.CallbackContext context)
     {
         Vector2 delta = context.ReadValue<Vector2>();
-        float nextXRotation = Mathf.Clamp(cameraPoint.localEulerAngles.x + (-delta.y) * Time.deltaTime * cameraSpeed, 0.0f, 90.0f);
-        float nextYRotation = cameraPoint.localEulerAngles.y + delta.x * Time.deltaTime * cameraSpeed;
+
+        float deltaX = Mathf.Clamp(delta.x, -1.0f, 1.0f);
+        float deltaY = Mathf.Clamp(delta.y, -1.0f, 1.0f);
+
+        float nextXRotation = Mathf.Clamp(cameraPoint.localEulerAngles.x + -deltaY * cameraSpeed, 0.0f, 90.0f);
+        float nextYRotation = cameraPoint.localEulerAngles.y + deltaX * cameraSpeed;
         cameraPoint.eulerAngles = new Vector3(nextXRotation, nextYRotation, cameraPoint.localEulerAngles.z);
     }
 }
