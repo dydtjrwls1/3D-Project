@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 111775449858865415}
   serializedVersion: 2
   m_LocalRotation: {x: -0.000000040875015, y: -0.00000010717065, z: 0.0000000011435674, w: 1}
-  m_LocalPosition: {x: 0, y: 0.8423333, z: -2}
+  m_LocalPosition: {x: 0, y: 0.867, z: -2}
   m_LocalScale: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -175,6 +175,7 @@ GameObject:
   - component: {fileID: 5882943310388096502}
   - component: {fileID: 6393741198354170707}
   - component: {fileID: 7185206105724302783}
+  - component: {fileID: 8749844988109273488}
   - component: {fileID: 6925796141808893294}
   m_Layer: 0
   m_Name: TestPlayer
@@ -233,7 +234,7 @@ Rigidbody:
   m_GameObject: {fileID: 2859441207676952031}
   serializedVersion: 4
   m_Mass: 1
-  m_Drag: 0.1
+  m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
@@ -251,6 +252,27 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0
+--- !u!95 &8749844988109273488
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2859441207676952031}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 68ad8670be922be4581873311ed8c91a, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &6925796141808893294
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -264,6 +286,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   body: {fileID: 4750887643380026997}
+  cameraPoint: {fileID: 5542432249925071659}
+  root: {fileID: 7366674994944003219}
   minRotateSpeed: 120
   maxRotateSpeed: 1440
   rotateDuration: 5
@@ -273,29 +297,20 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0.256319
-      outSlope: 0.256319
-      tangentMode: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.29931158
-    - serializedVersion: 3
-      time: 0.6169698
-      value: 0.19237898
-      inSlope: 0.37547702
-      outSlope: 0.37547702
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.2884291
-      outWeight: 0.9205429
+      outWeight: 0
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 3.6084871
-      outSlope: 3.6084871
-      tangentMode: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
       weightedMode: 0
-      inWeight: 0.12713155
+      inWeight: 0
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -303,6 +318,7 @@ MonoBehaviour:
   defaultCameraDistance: 6
   zoomDistance: 2
   fireForce: 7
+  cameraSpeed: 10
 --- !u!1 &4287207728263272058
 GameObject:
   m_ObjectHideFlags: 0
@@ -547,7 +563,7 @@ Transform:
   m_GameObject: {fileID: 6554299126090146673}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.329, z: 0}
+  m_LocalPosition: {x: 0, y: 0.867, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -708,12 +724,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Damping: {x: 0, y: 0, z: 0}
   ShoulderOffset: {x: 0, y: 0, z: 0}
-  VerticalArmLength: 1.54
+  VerticalArmLength: 0
   CameraSide: 1
   CameraDistance: 6
   CameraCollisionFilter:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4294967295
   IgnoreTag: 
   CameraRadius: 0.2
   DampingIntoCollision: 0

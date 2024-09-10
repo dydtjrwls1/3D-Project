@@ -27,7 +27,6 @@ public class ChargingState : IPlayerState
     {
         framingTransposer.CameraDistance = player.defaultCameraDistance;
         body.localRotation = Quaternion.identity;
-        player.Animator.enabled = true;
     }
 
     public void UpdateState(PlayerController player)
@@ -57,18 +56,24 @@ public class IdleState : IPlayerState
 public class FireState : IPlayerState
 {
     Transform root;
+    Rigidbody rb;
 
     public void EnterState(PlayerController player)
     {
         root = player.root;
+        rb = player.PlayerRb;
+
+        rb.AddForce(player.fireForce * Mathf.Max(0.2f, player.CurrentChargeDelta) * (root.up + root.forward), ForceMode.Impulse);
     }
 
     public void ExitState(PlayerController player)
     {
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
     }
 
     public void UpdateState(PlayerController player)
     {
-        root.rotation = Quaternion.Euler(Vector3.right * player.CurrentYVelocity);
+        
     }
 }
