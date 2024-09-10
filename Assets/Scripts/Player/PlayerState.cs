@@ -63,7 +63,7 @@ public class FireState : IPlayerState
         root = player.root;
         rb = player.PlayerRb;
 
-        rb.AddForce(player.fireForce * Mathf.Max(0.2f, player.CurrentChargeDelta) * (root.up + root.forward), ForceMode.Impulse);
+        rb.AddForce(player.CurrentFireForce * (root.up + root.forward), ForceMode.Impulse);
     }
 
     public void ExitState(PlayerController player)

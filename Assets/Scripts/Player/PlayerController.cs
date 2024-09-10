@@ -33,7 +33,8 @@ public class PlayerController : MonoBehaviour
     public float defaultCameraDistance = 6.0f;
     public float zoomDistance = 4.0f;
 
-    public float fireForce = 5.0f;
+    public float minFireForce = 3.0f;
+    public float maxFireForce = 5.0f;
     public float cameraSpeed = 30.0f;
 
     // Changing State 관련 프로퍼티
@@ -51,6 +52,8 @@ public class PlayerController : MonoBehaviour
 
     // BodyAnimationCurve의 현재 값에 따른 카메라 줌 거리
     public float CurrentZoomDistance => defaultCameraDistance - zoomDistance * CurrentChargeDelta;
+
+    public float CurrentFireForce => minFireForce + (maxFireForce - minFireForce) * CurrentChargeDelta;
 
     Vector3 nextCameraRotation;
 
@@ -108,6 +111,7 @@ public class PlayerController : MonoBehaviour
     {
         elapsedTime += Time.deltaTime;
         currentState.UpdateState(this);
+        //Debug.Log(cameraPoint.local);
     }
 
     private void LateUpdate()
@@ -134,7 +138,7 @@ public class PlayerController : MonoBehaviour
         {
             elapsedTime = 0.0f;
             SetState(new ChargingState());
-            animator.enabled = false;
+            // animator.enabled = false;
         }
     }
 
@@ -142,7 +146,7 @@ public class PlayerController : MonoBehaviour
     {
         if(currentState is ChargingState)
         {
-            animator.enabled = true;
+            // animator.enabled = true;
             animator.SetBool(Fire_Hash, true);
             SetState(new FireState());
         }
@@ -155,7 +159,7 @@ public class PlayerController : MonoBehaviour
         float deltaX = Mathf.Clamp(delta.x, -30.0f, 30.0f);
         float deltaY = Mathf.Clamp(delta.y, -30.0f, 30.0f);
 
-        float nextXRotation = Mathf.Clamp(cameraPoint.localEulerAngles.x + -deltaY, 0.0f, 90.0f);
+        float nextXRotation = cameraPoint.localEulerAngles.x + -deltaY;
         float nextYRotation = cameraPoint.localEulerAngles.y + deltaX;
         nextCameraRotation = new Vector3(nextXRotation, nextYRotation, 0);
     }
@@ -167,10 +171,9 @@ public class PlayerController : MonoBehaviour
             yield return null;
         }
 
-        animator.SetBool(Fire_Hash, false);
-
         yield return new WaitForSeconds(0.5f);
 
+        animator.SetBool(Fire_Hash, false);
         SetState(new IdleState());
     }
 }
