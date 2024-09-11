@@ -1,27 +1,44 @@
 using Cinemachine;
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    // 필요 컴포넌트
     CinemachineVirtualCamera vcam;
     PlayerInputActions inputAction;
     Rigidbody rb;
     Animator animator;
 
-    public Transform body;
-    public Transform cameraPoint;
-    public Transform root;
-
+    // 상태 함수들
     IPlayerState currentState;
+    IdleState idleState = new IdleState();
+    FireState fireState = new FireState();
+    ChargingState chargingState = new ChargingState();
 
+    // Fire 상태에서 Idle 상태로 돌아가기 까지의 약간의 딜레이 시간
+    WaitForSeconds returnIdleWaitTimeDelay = new WaitForSeconds(0.5f);
+    // Fire 상태에서 Ground에 닿을 시 Idle 상태로 돌아가는 코루틴 함수를 담을 변수
+    Coroutine returnIdleCoroutine;
+
+    // 누적시간 Charging 시마다 초기화 한다.
     float elapsedTime = 0.0f;
 
+    // 바닥에 닿았음 여부
     bool isGrounded = true;
+
+    // Charging 시 돌릴 몸통 부분 메쉬
+    public Transform body;
+
+    // 카메라가 바라볼 포인트
+    public Transform cameraPoint;
+
+    // 모든 Mesh를 자식으로 가지고 있는 트랜스폼
+    public Transform root;
+
+    
 
     [Header("객체 회전")]
     public float minRotateSpeed = 10.0f;
@@ -69,7 +86,7 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        SetState(new IdleState());
+        SetState(idleState);
     }
 
     private void OnEnable()
@@ -94,7 +111,13 @@ public class PlayerController : MonoBehaviour
         if (!isGrounded && collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
-            StartCoroutine(ReturnIdleRoutine());
+
+            if(returnIdleCoroutine != null)
+            {
+                StopCoroutine(returnIdleCoroutine);
+            }
+
+            returnIdleCoroutine = StartCoroutine(ReturnIdleRoutine());      
         }
     }
 
@@ -137,8 +160,8 @@ public class PlayerController : MonoBehaviour
         if(currentState is IdleState)
         {
             elapsedTime = 0.0f;
-            SetState(new ChargingState());
-            // animator.enabled = false;
+            SetState(chargingState);
+            animator.enabled = false;
         }
     }
 
@@ -146,9 +169,9 @@ public class PlayerController : MonoBehaviour
     {
         if(currentState is ChargingState)
         {
-            // animator.enabled = true;
+            animator.enabled = true;
             animator.SetBool(Fire_Hash, true);
-            SetState(new FireState());
+            SetState(fireState);
         }
     }
 
@@ -171,9 +194,11 @@ public class PlayerController : MonoBehaviour
             yield return null;
         }
 
-        yield return new WaitForSeconds(0.5f);
+        yield return returnIdleWaitTimeDelay;
 
         animator.SetBool(Fire_Hash, false);
-        SetState(new IdleState());
+        SetState(idleState);
+
+        returnIdleCoroutine = null;
     }
 }

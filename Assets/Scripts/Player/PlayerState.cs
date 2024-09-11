@@ -12,11 +12,11 @@ public class ChargingState : IPlayerState
 
     public void EnterState(PlayerController player)
     {
-        body = player.PlayerBody;
-        root = player.root;
-        cameraPoint = player.cameraPoint;
-        vcam = player.PlayerMainCam;
-        framingTransposer = vcam.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
+        body = body ?? player.PlayerBody;
+        root = root ?? player.root;
+        cameraPoint = cameraPoint ?? player.cameraPoint;
+        vcam = vcam ?? player.PlayerMainCam;
+        framingTransposer = framingTransposer ?? vcam.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
         if(framingTransposer == null)
         {
             Debug.LogError("CinemachineFramingTransposer component not found.");
@@ -25,12 +25,16 @@ public class ChargingState : IPlayerState
 
     public void ExitState(PlayerController player)
     {
+        // 카메라 원위치
         framingTransposer.CameraDistance = player.defaultCameraDistance;
+
+        // Player 몸통 원위치
         body.localRotation = Quaternion.identity;
     }
 
     public void UpdateState(PlayerController player)
     {
+        // 플레이어 몸통 회전 + 카메라 점점 가까이 + Mesh를 카메라가 바라보는 방향으로
         root.localRotation = Quaternion.Euler(Vector3.up * cameraPoint.localEulerAngles.y);
         body.Rotate(Time.deltaTime * player.CurrentRotateSpeed * Vector3.up, Space.Self);
         framingTransposer.CameraDistance = player.CurrentZoomDistance;
@@ -60,14 +64,16 @@ public class FireState : IPlayerState
 
     public void EnterState(PlayerController player)
     {
-        root = player.root;
-        rb = player.PlayerRb;
+        root = root ?? player.root;
+        rb = rb ?? player.PlayerRb;
 
+        // 플레이어를 카메라가 바라보는 방향으로 발사
         rb.AddForce(player.CurrentFireForce * (root.up + root.forward), ForceMode.Impulse);
     }
 
     public void ExitState(PlayerController player)
     {
+        // rigidbody의 velocity 초기화
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
     }
