@@ -34,6 +34,7 @@ public class ChargingState : IPlayerState
 
     public void UpdateState(PlayerController player)
     {
+        player.onCharging?.Invoke(player.CurrentChargeDelta);
         // 플레이어 몸통 회전 + 카메라 점점 가까이 + Mesh를 카메라가 바라보는 방향으로
         root.localRotation = Quaternion.Euler(Vector3.up * cameraPoint.localEulerAngles.y);
         body.Rotate(Time.deltaTime * player.CurrentRotateSpeed * Vector3.up, Space.Self);

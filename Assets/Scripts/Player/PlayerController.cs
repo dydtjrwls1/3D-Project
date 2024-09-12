@@ -60,6 +60,8 @@ public class PlayerController : MonoBehaviour
     public Rigidbody PlayerRb => rb;
     public Animator Animator => animator;
 
+    public Action<float> onCharging = null;
+
     public float ElapsedTime => elapsedTime;
     // BodyAnimationCurve의 현재 값
     public float CurrentChargeDelta => chargeAnimationCurve.Evaluate(elapsedTime / rotateDuration);
@@ -72,7 +74,7 @@ public class PlayerController : MonoBehaviour
 
     public float CurrentFireForce => minFireForce + (maxFireForce - minFireForce) * CurrentChargeDelta;
 
-    Vector3 nextCameraRotation;
+    Quaternion nextCameraRotation;
 
     readonly int Fire_Hash = Animator.StringToHash("Fire");
 
@@ -97,13 +99,16 @@ public class PlayerController : MonoBehaviour
         inputAction.Player.MousePoint.performed += On_MouseMove;
     }
 
-    
-
     private void OnDisable()
     {
         inputAction.Player.Click.canceled -= Off_Click;
         inputAction.Player.Click.performed -= On_Click;
         inputAction.Player.Disable();
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        OnDie();
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -123,7 +128,6 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionExit(Collision collision)
     {
-
         if (isGrounded && collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = false;
@@ -140,8 +144,8 @@ public class PlayerController : MonoBehaviour
     private void LateUpdate()
     {
         // 카메라 각도 변경
-        cameraPoint.localEulerAngles = Vector3.Slerp(cameraPoint.localEulerAngles, nextCameraRotation, Time.deltaTime * cameraSpeed);
-        //cameraPoint.localEulerAngles = new Vector3(cameraPoint.localEulerAngles.x, cameraPoint.localEulerAngles.y, 0);
+        cameraPoint.localRotation = Quaternion.Slerp(cameraPoint.localRotation, nextCameraRotation, Time.deltaTime * cameraSpeed);
+        Debug.Log(cameraPoint.localRotation.x);
     }
 
     public void SetState(IPlayerState newState)
@@ -182,9 +186,10 @@ public class PlayerController : MonoBehaviour
         float deltaX = Mathf.Clamp(delta.x, -30.0f, 30.0f);
         float deltaY = Mathf.Clamp(delta.y, -30.0f, 30.0f);
 
-        float nextXRotation = cameraPoint.localEulerAngles.x + -deltaY;
+        float nextXRotation = cameraPoint.localEulerAngles.x - deltaY;
         float nextYRotation = cameraPoint.localEulerAngles.y + deltaX;
-        nextCameraRotation = new Vector3(nextXRotation, nextYRotation, 0);
+
+        nextCameraRotation = Quaternion.Euler(nextXRotation, nextYRotation, 0);
     }
 
     IEnumerator ReturnIdleRoutine()
@@ -200,5 +205,17 @@ public class PlayerController : MonoBehaviour
         SetState(idleState);
 
         returnIdleCoroutine = null;
+    }
+
+    void OnDie()
+    {
+        Transform camTransform = vcam.transform;
+
+        vcam.Follow = null;
+        camTransform.position = transform.position + Vector3.up * 2.0f;
+        camTransform.parent = null;
+        camTransform.LookAt(transform.position);
+
+        inputAction.Player.Disable();
     }
 }
