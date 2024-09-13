@@ -7,6 +7,8 @@ public class Trap_Push : TrapBase
 {
     public float force = 5.0f;
 
+    Material trapMaterial;
+
     Transform hinge;
     Transform plate;
 

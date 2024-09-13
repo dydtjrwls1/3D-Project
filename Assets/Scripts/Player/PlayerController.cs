@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     PlayerInputActions inputAction;
     Rigidbody rb;
     Animator animator;
+    GroundSensor groundSensor;
 
     // 상태 함수들
     IPlayerState currentState;
@@ -25,9 +26,6 @@ public class PlayerController : MonoBehaviour
 
     // 누적시간 Charging 시마다 초기화 한다.
     float elapsedTime = 0.0f;
-
-    // 바닥에 닿았음 여부
-    bool isGrounded = true;
 
     // Charging 시 돌릴 몸통 부분 메쉬
     public Transform body;
@@ -84,11 +82,24 @@ public class PlayerController : MonoBehaviour
         vcam = GetComponentInChildren<CinemachineVirtualCamera>();
         rb = GetComponentInChildren<Rigidbody>();
         animator = GetComponentInChildren<Animator>();
+        groundSensor = GetComponentInChildren<GroundSensor>();
     }
 
     private void Start()
     {
         SetState(idleState);
+        groundSensor.onGround += (onGround) =>
+        {
+            if (onGround)
+            {
+                if (returnIdleCoroutine != null)
+                {
+                    StopCoroutine(returnIdleCoroutine);
+                }
+
+                returnIdleCoroutine = StartCoroutine(ReturnIdleRoutine());
+            }
+        };
     }
 
     private void OnEnable()
@@ -108,30 +119,11 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        OnDie();
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (!isGrounded && collision.gameObject.CompareTag("Ground"))
+        if (other.CompareTag("DeathZone"))
         {
-            isGrounded = true;
-
-            if(returnIdleCoroutine != null)
-            {
-                StopCoroutine(returnIdleCoroutine);
-            }
-
-            returnIdleCoroutine = StartCoroutine(ReturnIdleRoutine());      
+            OnDie();
         }
-    }
-
-    private void OnCollisionExit(Collision collision)
-    {
-        if (isGrounded && collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = false;
-        }
+        
     }
 
     private void Update()
