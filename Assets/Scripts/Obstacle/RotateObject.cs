@@ -5,10 +5,15 @@ using UnityEngine;
 
 public class RotateObject : MonoBehaviour
 {
-    public float rotateForce = 180.0f;
-    // public float hitForce = 7.5f;
+    [Range(10.0f, 90.0f)]
+    public float angle = 30.0f;
+
+    [Range(0.5f, 5.0f)]
+    public float speed = 1.0f;
    
     public Transform target;
+
+    float elapsedTime = 0.0f;
 
     private void Awake()
     {
@@ -18,7 +23,9 @@ public class RotateObject : MonoBehaviour
 
     private void Update()
     {
-        transform.Rotate(Time.deltaTime * rotateForce * Vector3.up);
+        elapsedTime += Time.deltaTime;
+
+        target.eulerAngles = Vector3.forward * angle * Mathf.Sin(elapsedTime * speed);
     }
 
     //public void OnHit(Rigidbody target, Collision _)

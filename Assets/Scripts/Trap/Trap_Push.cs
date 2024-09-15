@@ -20,6 +20,9 @@ public class Trap_Push : TrapBase
     {
         hinge = transform.GetChild(1);
         plate = hinge.GetChild(0);
+
+        Transform child = transform.GetChild(0);
+        trapMaterial = child.GetComponent<MeshRenderer>().material;
     }
 
     protected override void Activate(Collider other)
@@ -27,6 +30,7 @@ public class Trap_Push : TrapBase
         base.Activate(other);
         MoveHinge(other);
         StartCoroutine(RotateHinge());
+        trapMaterial.color = Color.clear;
     }
 
     void MoveHinge(Collider other)

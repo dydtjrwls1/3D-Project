@@ -75,7 +75,6 @@ public class FireState : IPlayerState
     public void ExitState(PlayerController player)
     {
         // rigidbody의 velocity 초기화
-        rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
     }
 
