@@ -74,7 +74,7 @@ public class PlayerController : MonoBehaviour
     // BodyAnimationCurve의 현재 값에 따른 카메라 줌 거리
     public float CurrentZoomDistance => defaultCameraDistance - zoomDistance * CurrentChargeDelta;
 
-    public float CurrentFireForce => minFireForce + (maxFireForce - minFireForce) * CurrentChargeDelta;
+    public float CurrentFireForce => minFireForce + (maxFireForce - minFireForce) * rb.mass * CurrentChargeDelta;
 
     Quaternion nextCameraRotation;
 
@@ -137,6 +137,11 @@ public class PlayerController : MonoBehaviour
             animator.SetBool(Fire_Hash, false);
             SetState(idleState);
         }
+    }
+
+    private void FixedUpdate()
+    {
+        if(isGround) rb.velocity *= 0.9f;
     }
 
     private void Update()

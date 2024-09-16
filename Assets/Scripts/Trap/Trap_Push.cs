@@ -43,11 +43,16 @@ public class Trap_Push : TrapBase
 
         plate.position = transform.position;
 
-        Player player = other.GetComponent<Player>();
-        Rigidbody rb = other.GetComponent<Rigidbody>();
+        PlayerController player = other.GetComponent<PlayerController>();
 
-        rb?.AddForce(lookTarget * new Vector3(0, 1, 1) * force, ForceMode.Impulse);
+        AddForceToPlayer(player, lookTarget);
+    }
 
+    void AddForceToPlayer(PlayerController player, Quaternion dir)
+    {
+        Rigidbody rb = player.GetComponent<Rigidbody>();
+
+        rb?.AddForce(dir * new Vector3(0, 1, 1) * force, ForceMode.Impulse);
     }
 
     IEnumerator RotateHinge()
