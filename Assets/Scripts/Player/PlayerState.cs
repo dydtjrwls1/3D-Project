@@ -26,7 +26,7 @@ public class ChargingState : IPlayerState
     public void ExitState(PlayerController player)
     {
         // 카메라 원위치
-        framingTransposer.CameraDistance = player.defaultCameraDistance;
+        framingTransposer.CameraDistance = player.DefaultCameraDistance;
 
         // Player 몸통 원위치
         body.localRotation = Quaternion.identity;

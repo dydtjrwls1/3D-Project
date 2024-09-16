@@ -47,12 +47,14 @@ public class PlayerController : MonoBehaviour
     public AnimationCurve chargeAnimationCurve;
 
     [Header("카메라")]
-    public float defaultCameraDistance = 6.0f;
+    float defaultCameraDistance;
     public float zoomDistance = 4.0f;
 
     public float minFireForce = 3.0f;
     public float maxFireForce = 5.0f;
     public float cameraSpeed = 30.0f;
+
+    public float DefaultCameraDistance => defaultCameraDistance;
 
     // Changing State 관련 프로퍼티
     public CinemachineVirtualCamera PlayerMainCam => vcam;
@@ -89,6 +91,8 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
+        defaultCameraDistance = vcam.GetCinemachineComponent<Cinemachine3rdPersonFollow>().CameraDistance;
+
         SetState(idleState);
         groundSensor.onGround += (onGround) =>
         {
@@ -146,7 +150,7 @@ public class PlayerController : MonoBehaviour
     {
         // 카메라 각도 변경
         cameraPoint.localRotation = Quaternion.Slerp(cameraPoint.localRotation, nextCameraRotation, Time.deltaTime * cameraSpeed);
-        Debug.Log(cameraPoint.localRotation.x);
+        //Debug.Log(cameraPoint.localRotation.x);
     }
 
     public void SetState(IPlayerState newState)
