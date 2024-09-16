@@ -1,37 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &4420948410978439506
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 9215616640392376394}
-  m_Layer: 0
-  m_Name: Hinge
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &9215616640392376394
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4420948410978439506}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 4435663018229339544}
-  m_Father: {fileID: 8790936861663190836}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7140633027467717335
 GameObject:
   m_ObjectHideFlags: 0
@@ -43,7 +11,7 @@ GameObject:
   - component: {fileID: 4435663018229339544}
   - component: {fileID: 4009830691153192949}
   - component: {fileID: 847570902260789387}
-  - component: {fileID: 3365414113760271074}
+  - component: {fileID: 6851865177627317124}
   m_Layer: 8
   m_Name: Mesh
   m_TagString: Untagged
@@ -60,11 +28,11 @@ Transform:
   m_GameObject: {fileID: 7140633027467717335}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: -8, z: 0}
+  m_LocalPosition: {x: 0, y: -20, z: 0}
   m_LocalScale: {x: 2, y: 5, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 9215616640392376394}
+  m_Father: {fileID: 5510465651192716649}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
 --- !u!33 &4009830691153192949
 MeshFilter:
@@ -116,7 +84,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &3365414113760271074
+--- !u!136 &6851865177627317124
 CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -135,10 +103,42 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5000001
-  m_Height: 2
+  m_Radius: 0.5000002
+  m_Height: 2.0000005
   m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+  m_Center: {x: 0.00000017881395, y: -3.5527137e-15, z: -0.00000008940697}
+--- !u!1 &7538604025475994773
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5510465651192716649}
+  m_Layer: 0
+  m_Name: Hinge
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5510465651192716649
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7538604025475994773}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 20, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4435663018229339544}
+  m_Father: {fileID: 8790936861663190836}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7918498382192331473
 GameObject:
   m_ObjectHideFlags: 0
@@ -148,8 +148,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8790936861663190836}
-  - component: {fileID: 2177582356389548105}
-  - component: {fileID: 2434510988261871146}
+  - component: {fileID: 5826204074498684432}
+  - component: {fileID: 7256602713967006438}
   m_Layer: 0
   m_Name: Log
   m_TagString: Untagged
@@ -170,10 +170,10 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 9215616640392376394}
+  - {fileID: 5510465651192716649}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!54 &2177582356389548105
+--- !u!54 &5826204074498684432
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -200,7 +200,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &2434510988261871146
+--- !u!114 &7256602713967006438
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -212,6 +212,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7c766496d3b42c458673bd344f8bf72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  target: {fileID: 5510465651192716649}
   angle: 60
   speed: 2
-  target: {fileID: 9215616640392376394}

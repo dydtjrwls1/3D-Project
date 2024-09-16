@@ -20,9 +20,9 @@ public class PlayerController : MonoBehaviour
     ChargingState chargingState = new ChargingState();
 
     // Fire 상태에서 Idle 상태로 돌아가기 까지의 약간의 딜레이 시간
-    WaitForSeconds returnIdleWaitTimeDelay = new WaitForSeconds(0.5f);
+    //WaitForSeconds returnIdleWaitTimeDelay = new WaitForSeconds(0.5f);
     // Fire 상태에서 Ground에 닿을 시 Idle 상태로 돌아가는 코루틴 함수를 담을 변수
-    Coroutine returnIdleCoroutine;
+    //Coroutine returnIdleCoroutine;
 
     // 누적시간 Charging 시마다 초기화 한다.
     float elapsedTime = 0.0f;
@@ -36,8 +36,10 @@ public class PlayerController : MonoBehaviour
     // 모든 Mesh를 자식으로 가지고 있는 트랜스폼
     public Transform root;
 
-    
+    float epsilon = 1.0f;
 
+    bool isGround = true;
+    
     [Header("객체 회전")]
     public float minRotateSpeed = 10.0f;
     public float maxRotateSpeed = 360.0f;
@@ -90,15 +92,7 @@ public class PlayerController : MonoBehaviour
         SetState(idleState);
         groundSensor.onGround += (onGround) =>
         {
-            if (onGround)
-            {
-                if (returnIdleCoroutine != null)
-                {
-                    StopCoroutine(returnIdleCoroutine);
-                }
-
-                returnIdleCoroutine = StartCoroutine(ReturnIdleRoutine());
-            }
+            isGround = onGround;
         };
     }
 
@@ -124,6 +118,21 @@ public class PlayerController : MonoBehaviour
             OnDie();
         }
         
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        if (currentState is FireState && isGround && rb.velocity.sqrMagnitude < epsilon)
+        {
+            //if (returnIdleCoroutine != null)
+            //{
+            //    StopCoroutine(returnIdleCoroutine);
+            //}
+
+            //returnIdleCoroutine = StartCoroutine(ReturnIdleRoutine());
+            animator.SetBool(Fire_Hash, false);
+            SetState(idleState);
+        }
     }
 
     private void Update()
@@ -184,20 +193,15 @@ public class PlayerController : MonoBehaviour
         nextCameraRotation = Quaternion.Euler(nextXRotation, nextYRotation, 0);
     }
 
-    IEnumerator ReturnIdleRoutine()
-    {
-        while(MathF.Abs(rb.velocity.x) > 1.0f)
-        {
-            yield return null;
-        }
+    //IEnumerator ReturnIdleRoutine()
+    //{
+    //    yield return returnIdleWaitTimeDelay;
 
-        yield return returnIdleWaitTimeDelay;
+    //    animator.SetBool(Fire_Hash, false);
+    //    SetState(idleState);
 
-        animator.SetBool(Fire_Hash, false);
-        SetState(idleState);
-
-        returnIdleCoroutine = null;
-    }
+    //    returnIdleCoroutine = null;
+    //}
 
     void OnDie()
     {

@@ -19,8 +19,6 @@ public class GroundSensor : MonoBehaviour
         {
             onGround?.Invoke(true);
         }
-            
-            
     }
 
     private void OnTriggerExit(Collider other)
