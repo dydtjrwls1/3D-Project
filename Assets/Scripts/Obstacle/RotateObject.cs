@@ -5,10 +5,6 @@ using UnityEngine;
 
 public class RotateObject : MonoBehaviour
 {
-    public Transform target;
-
-    public float hingeHeight = 20.0f;
-
     [Range(10.0f, 90.0f)]
     public float angle = 30.0f;
 
@@ -20,15 +16,6 @@ public class RotateObject : MonoBehaviour
 
     private void Awake()
     {
-        if (target == null)
-            target = transform.GetChild(0);
-
-        target.localPosition = Vector3.up * hingeHeight;
-
-        Transform mesh = target.GetChild(0);
-        mesh.localPosition = -Vector3.up * hingeHeight;
-
-        //rb = target.GetComponent<Rigidbody>();
     }
 
     private void FixedUpdate()
@@ -36,7 +23,7 @@ public class RotateObject : MonoBehaviour
         elapsedTime += Time.fixedDeltaTime;
 
         //target.rotation = Quaternion.Euler(Vector3.forward * angle * Mathf.Sin(elapsedTime * speed));
-        target.eulerAngles = Vector3.forward * angle * Mathf.Sin(elapsedTime * speed);
+        transform.eulerAngles = Vector3.forward * angle * Mathf.Sin(elapsedTime * speed);
     }
 
     private void Update()

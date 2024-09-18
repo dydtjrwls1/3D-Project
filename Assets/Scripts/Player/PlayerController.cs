@@ -1,8 +1,10 @@
 using Cinemachine;
 using System;
 using System.Collections;
+using System.Linq.Expressions;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -16,8 +18,8 @@ public class PlayerController : MonoBehaviour
     // 상태 함수들
     IPlayerState currentState;
     IdleState idleState = new IdleState();
-    FireState fireState = new FireState();
-    ChargingState chargingState = new ChargingState();
+    FireState fireState;
+    ChargingState chargingState;
 
     // Fire 상태에서 Idle 상태로 돌아가기 까지의 약간의 딜레이 시간
     //WaitForSeconds returnIdleWaitTimeDelay = new WaitForSeconds(0.5f);
@@ -36,10 +38,18 @@ public class PlayerController : MonoBehaviour
     // 모든 Mesh를 자식으로 가지고 있는 트랜스폼
     public Transform root;
 
+    // Charging 시 변화할 이미지
+    Image chargingImage;
+
     float epsilon = 1.0f;
 
     bool isGround = true;
-    
+
+    bool isHit = false;
+    bool wasHit = false;
+
+    float defaultCameraDistance;
+
     [Header("객체 회전")]
     public float minRotateSpeed = 10.0f;
     public float maxRotateSpeed = 360.0f;
@@ -47,22 +57,32 @@ public class PlayerController : MonoBehaviour
     public AnimationCurve chargeAnimationCurve;
 
     [Header("카메라")]
-    float defaultCameraDistance;
     public float zoomDistance = 4.0f;
-
-    public float minFireForce = 3.0f;
-    public float maxFireForce = 5.0f;
     public float cameraSpeed = 30.0f;
 
+    [Header("발사 속도")]
+    public float minFireForce = 3.0f;
+    public float maxFireForce = 5.0f;
+
+    // Hit 시 적용될 중력의 크기
+    public float gravity = 10.0f;
+    
     public float DefaultCameraDistance => defaultCameraDistance;
+
+    public bool IsHit => isHit;
 
     // Changing State 관련 프로퍼티
     public CinemachineVirtualCamera PlayerMainCam => vcam;
     public Transform PlayerBody => body;
     public Rigidbody PlayerRb => rb;
     public Animator Animator => animator;
+    public Image ChargingImage => chargingImage;
+    public IdleState IdleState => idleState;
+    
 
     public Action<float> onCharging = null;
+
+
 
     public float ElapsedTime => elapsedTime;
     // BodyAnimationCurve의 현재 값
@@ -87,6 +107,12 @@ public class PlayerController : MonoBehaviour
         rb = GetComponentInChildren<Rigidbody>();
         animator = GetComponentInChildren<Animator>();
         groundSensor = GetComponentInChildren<GroundSensor>();
+
+        Transform canvas = GetComponentInChildren<Canvas>().transform;
+        chargingImage = canvas.GetChild(0).GetComponent<Image>();
+
+        chargingState = new ChargingState(this);
+        fireState = new FireState(this);
     }
 
     private void Start()
@@ -98,6 +124,8 @@ public class PlayerController : MonoBehaviour
         {
             isGround = onGround;
         };
+
+        chargingImage.fillAmount = 0.0f;
     }
 
     private void OnEnable()
@@ -141,7 +169,22 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if(isGround) rb.velocity *= 0.9f;
+        if (isGround)
+        {
+            if (isHit)
+            {
+                float yVelocity = 0.0f;
+                rb.velocity = new(rb.velocity.x, yVelocity, rb.velocity.z);
+                //rb.velocity *= 0.8f;
+            } 
+            else
+            {
+                rb.velocity *= 0.9f;
+            }
+        }
+
+        rb.angularVelocity = Vector3.zero;
+        rb.AddForce(new Vector3(0, -gravity * GetComponent<Rigidbody>().mass, 0));
     }
 
     private void Update()
@@ -166,6 +209,7 @@ public class PlayerController : MonoBehaviour
             currentState.ExitState(this);
         }
         currentState = newState;
+        //Debug.Log("EnterStart");
         currentState.EnterState(this);
     }
 
@@ -222,5 +266,28 @@ public class PlayerController : MonoBehaviour
         camTransform.LookAt(transform.position);
 
         inputAction.Player.Disable();
+    }
+
+    public void HitPlayer(Vector3 hitVelocity, float hitTime)
+    {
+        rb.velocity = hitVelocity;
+        StartCoroutine(DecreaseHitForce(hitTime));
+    }
+
+    IEnumerator DecreaseHitForce(float hitTIme)
+    {
+        if (isHit) wasHit = true;
+        isHit = true;
+
+        for(float t = 0f; t < hitTIme; t += Time.deltaTime)
+        {
+            yield return null;
+        }
+
+        if(wasHit) wasHit = false;
+        else
+        {
+            isHit = false;
+        }
     }
 }

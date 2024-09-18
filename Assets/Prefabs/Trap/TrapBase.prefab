@@ -92,7 +92,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3135129549046062209}
-  - component: {fileID: 2592526337772366262}
   - component: {fileID: 6035259730850373330}
   m_Layer: 0
   m_Name: TrapBase
@@ -117,19 +116,6 @@ Transform:
   - {fileID: 2834069315993443419}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2592526337772366262
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7634648866121019895}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1506128a4fed20a4496d9f4fc1057770, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isOneTime: 0
 --- !u!135 &6035259730850373330
 SphereCollider:
   m_ObjectHideFlags: 0
