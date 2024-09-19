@@ -95,14 +95,14 @@ public class PlayerController : MonoBehaviour
         set
         {
             hp = Mathf.Clamp(value, 0, 3);
-            if(hp < 1)
+            onHealthChange?.Invoke(hp);
+            if (hp < 1)
             {
                 OnDie();
             }
             else
             {
                 ResetPlayer();
-                onHealthChange?.Invoke(hp);
             }
         }
     }
@@ -181,7 +181,7 @@ public class PlayerController : MonoBehaviour
     private void OnCollisionStay(Collision collision)
     {
         // 발사 후 땅에 착지했을 때 velocity 가 일정 이하면 Idle 상태로 돌아간다
-        if (currentState is FireState && isGround && rb.velocity.sqrMagnitude < epsilon)
+        if (currentState is FireState && rb.velocity.sqrMagnitude < epsilon)
         {
             //if (returnIdleCoroutine != null)
             //{

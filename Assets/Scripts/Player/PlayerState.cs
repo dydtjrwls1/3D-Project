@@ -61,7 +61,7 @@ public class ChargingState : IPlayerState
 
         // charging image 채우기 변화
         chargingImage.fillAmount = player.CurrentChargeDelta;
-        chargingImage.transform.localRotation = lookPoint; // 항상 카메라가 바라보는 방향을 향하게 회전
+        chargingImage.transform.localRotation = cameraPoint.localRotation; // 항상 카메라가 바라보는 방향을 향하게 회전
     }
 }
 
