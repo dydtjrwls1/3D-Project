@@ -41,12 +41,17 @@ public class PlayerController : MonoBehaviour
     // Charging 시 변화할 이미지
     Image chargingImage;
 
+    Vector3 spawnPoint;
+
     float epsilon = 1.0f;
 
     bool isGround = true;
 
     bool isHit = false;
     bool wasHit = false;
+
+    int maxHp = 3;
+    int hp;
 
     float defaultCameraDistance;
 
@@ -82,7 +87,25 @@ public class PlayerController : MonoBehaviour
 
     public Action<float> onCharging = null;
 
+    public Action<int> onHealthChange = null;
 
+    public int HP
+    {
+        get => hp;
+        set
+        {
+            hp = Mathf.Clamp(value, 0, 3);
+            if(hp < 1)
+            {
+                OnDie();
+            }
+            else
+            {
+                ResetPlayer();
+                onHealthChange?.Invoke(hp);
+            }
+        }
+    }
 
     public float ElapsedTime => elapsedTime;
     // BodyAnimationCurve의 현재 값
@@ -98,7 +121,7 @@ public class PlayerController : MonoBehaviour
 
     Quaternion nextCameraRotation;
 
-    readonly int Fire_Hash = Animator.StringToHash("Fire");
+    public readonly int Fire_Hash = Animator.StringToHash("Fire");
 
     private void Awake()
     {
@@ -113,6 +136,9 @@ public class PlayerController : MonoBehaviour
 
         chargingState = new ChargingState(this);
         fireState = new FireState(this);
+
+        spawnPoint = transform.position;
+        hp = maxHp;
     }
 
     private void Start()
@@ -143,17 +169,18 @@ public class PlayerController : MonoBehaviour
         inputAction.Player.Disable();
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("DeathZone"))
-        {
-            OnDie();
-        }
-        
-    }
+    //private void OnTriggerEnter(Collider other)
+    //{
+    //    if (other.CompareTag("DeathZone"))
+    //    {
+    //        OnDie();
+    //    }
+    //}
 
+    
     private void OnCollisionStay(Collision collision)
     {
+        // 발사 후 땅에 착지했을 때 velocity 가 일정 이하면 Idle 상태로 돌아간다
         if (currentState is FireState && isGround && rb.velocity.sqrMagnitude < epsilon)
         {
             //if (returnIdleCoroutine != null)
@@ -162,7 +189,7 @@ public class PlayerController : MonoBehaviour
             //}
 
             //returnIdleCoroutine = StartCoroutine(ReturnIdleRoutine());
-            animator.SetBool(Fire_Hash, false);
+            //animator.SetBool(Fire_Hash, false);
             SetState(idleState);
         }
     }
@@ -173,9 +200,7 @@ public class PlayerController : MonoBehaviour
         {
             if (isHit)
             {
-                float yVelocity = 0.0f;
-                rb.velocity = new(rb.velocity.x, yVelocity, rb.velocity.z);
-                //rb.velocity *= 0.8f;
+                rb.AddForce(new Vector3(0, -gravity * GetComponent<Rigidbody>().mass, 0));
             } 
             else
             {
@@ -228,7 +253,7 @@ public class PlayerController : MonoBehaviour
         if(currentState is ChargingState)
         {
             animator.enabled = true;
-            animator.SetBool(Fire_Hash, true);
+            //animator.SetBool(Fire_Hash, true);
             SetState(fireState);
         }
     }
@@ -289,5 +314,14 @@ public class PlayerController : MonoBehaviour
         {
             isHit = false;
         }
+    }
+
+    public void ResetPlayer()
+    {
+        SetState(idleState);
+
+        transform.position = spawnPoint;
+        transform.rotation = Quaternion.identity;
+        cameraPoint.localRotation = Quaternion.identity;
     }
 }

@@ -85,23 +85,28 @@ public class FireState : IPlayerState
 {
     Transform root;
     Rigidbody rb;
+    Animator animator;
 
     public FireState(PlayerController player)
     {
         rb = player.PlayerRb;
         root = player.root;
+        animator = player.Animator;
     }
 
     public void EnterState(PlayerController player)
     {
         // 플레이어를 카메라가 바라보는 방향으로 발사
         rb.AddForce(player.CurrentFireForce * (root.up + root.forward), ForceMode.Impulse);
+        animator.SetBool(player.Fire_Hash, true);
     }
 
     public void ExitState(PlayerController player)
     {
         // rigidbody의 velocity 초기화
+        rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
+        animator.SetBool(player.Fire_Hash, false);
     }
 
     public void UpdateState(PlayerController player)
