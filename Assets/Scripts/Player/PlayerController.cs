@@ -48,7 +48,7 @@ public class PlayerController : MonoBehaviour
     bool isGround = true;
 
     bool isHit = false;
-    bool wasHit = false;
+    //bool wasHit = false;
 
     int maxHp = 3;
     int hp;
@@ -296,25 +296,25 @@ public class PlayerController : MonoBehaviour
     public void HitPlayer(Vector3 hitVelocity, float hitTime)
     {
         rb.velocity = hitVelocity;
-        StartCoroutine(DecreaseHitForce(hitTime));
+        // StartCoroutine(DecreaseHitForce(hitTime));
     }
 
-    IEnumerator DecreaseHitForce(float hitTIme)
-    {
-        if (isHit) wasHit = true;
-        isHit = true;
+    //IEnumerator DecreaseHitForce(float hitTIme)
+    //{
+    //    if (isHit) wasHit = true;
+    //    isHit = true;
 
-        for(float t = 0f; t < hitTIme; t += Time.deltaTime)
-        {
-            yield return null;
-        }
+    //    for(float t = 0f; t < hitTIme; t += Time.deltaTime)
+    //    {
+    //        yield return null;
+    //    }
 
-        if(wasHit) wasHit = false;
-        else
-        {
-            isHit = false;
-        }
-    }
+    //    if(wasHit) wasHit = false;
+    //    else
+    //    {
+    //        isHit = false;
+    //    }
+    //}
 
     public void ResetPlayer()
     {

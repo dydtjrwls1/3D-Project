@@ -1,42 +1,57 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Timeline;
+using UnityEditor;
 using UnityEngine;
 
 public class RotateObject : MonoBehaviour
 {
-    [Range(10.0f, 90.0f)]
-    public float angle = 30.0f;
+    private Vector3 option1 = Vector3.right;
+    private Vector3 option2 = Vector3.up;
+    private Vector3 option3 = Vector3.forward;
 
-    [Range(0.5f, 5.0f)]
-    public float speed = 1.0f;
+    [SerializeField] private int selectedIndex = 0;
 
-    float elapsedTime = 0.0f;
-
-
-    private void Awake()
+    public Vector3 SelectedVector
     {
+        get
+        {
+            switch (selectedIndex)
+            {
+                case 0: return option1;
+                case 1: return option2;
+                case 2: return option3;
+                default: return Vector3.zero;
+            }
+        }
     }
 
-    private void FixedUpdate()
-    {
-        elapsedTime += Time.fixedDeltaTime;
-
-        //target.rotation = Quaternion.Euler(Vector3.forward * angle * Mathf.Sin(elapsedTime * speed));
-        transform.eulerAngles = Vector3.forward * angle * Mathf.Sin(elapsedTime * speed);
-    }
+    [SerializeField]
+    public float speed = 60.0f;
 
     private void Update()
     {
-       // elapsedTime += Time.deltaTime;
-
-        //target.eulerAngles = Vector3.forward * angle * Mathf.Sin(elapsedTime * speed);
-        
+        transform.Rotate(Time.deltaTime * speed * SelectedVector);
     }
 
-    //public void OnHit(Rigidbody target, Collision _)
-    //{
-    //    Transform trans = target.transform;
-    //    target.AddForce((trans.up + -trans.forward) * hitForce, ForceMode.Impulse);
-    //}
+    [CustomEditor(typeof(RotateObject))]
+    public class MyScriptEditor : Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            RotateObject myScript = (RotateObject)target;
+
+            serializedObject.Update();
+
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("speed"));
+
+            string[] options = new string[] { "X Axis", "Y Axis", "Z Axis" };
+            myScript.selectedIndex = EditorGUILayout.Popup("Select Axis", myScript.selectedIndex, options);
+
+            serializedObject.ApplyModifiedProperties();
+
+            EditorGUILayout.LabelField("Selected Axis", myScript.SelectedVector.ToString());
+        }
+    }
 }
+
+

@@ -86,18 +86,23 @@ public class FireState : IPlayerState
     Transform root;
     Rigidbody rb;
     Animator animator;
+    Transform cameraPoint;
 
     public FireState(PlayerController player)
     {
         rb = player.PlayerRb;
         root = player.root;
         animator = player.Animator;
+        cameraPoint = player.cameraPoint;
     }
 
     public void EnterState(PlayerController player)
     {
         // 플레이어를 카메라가 바라보는 방향으로 발사
-        rb.AddForce(player.CurrentFireForce * (root.up + root.forward), ForceMode.Impulse);
+        //rb.AddForce(player.CurrentFireForce * (root.up + root.forward), ForceMode.Impulse);
+        Quaternion lookRotation = Quaternion.AngleAxis(cameraPoint.localEulerAngles.x, root.right);
+        rb.AddForce(player.CurrentFireForce * (lookRotation * (root.forward)), ForceMode.Impulse);
+        
         animator.SetBool(player.Fire_Hash, true);
     }
 
