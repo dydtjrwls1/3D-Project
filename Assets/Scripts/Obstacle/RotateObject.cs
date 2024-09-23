@@ -45,7 +45,8 @@ public class RotateObject : MonoBehaviour
             EditorGUILayout.PropertyField(serializedObject.FindProperty("speed"));
 
             string[] options = new string[] { "X Axis", "Y Axis", "Z Axis" };
-            myScript.selectedIndex = EditorGUILayout.Popup("Select Axis", myScript.selectedIndex, options);
+            SerializedProperty selectedIndexProp = serializedObject.FindProperty("selectedIndex");
+            selectedIndexProp.intValue = EditorGUILayout.Popup("Select Axis", myScript.selectedIndex, options);
 
             serializedObject.ApplyModifiedProperties();
 
