@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -21,6 +22,10 @@ public class ClearText : MonoBehaviour
         text.color = Color.clear;
 
         goal = FindAnyObjectByType<Goal>();
-        goal.onClear += () => { text.color = orgColor; };
+        goal.onClear += () => 
+        {
+            text.DOColor(orgColor, 1.0f);
+            transform.DOScale(1.5f, 1.0f);
+        };
     }
 }

@@ -16,8 +16,8 @@ public class GameManager : SingleTon<GameManager>
     protected override void OnInitialize()
     {
         // light 업데이트 (scene 을 불러왔을 때 제대로 작동하지 않아서 추가함)
-        RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Skybox;
-        DynamicGI.UpdateEnvironment();
+        //RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Skybox;
+        
 
         player = FindAnyObjectByType<PlayerController>();
         if (player == null) 

@@ -2,6 +2,7 @@ using Cinemachine;
 using System;
 using System.Collections;
 using System.Linq.Expressions;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -20,6 +21,8 @@ public class PlayerController : MonoBehaviour
     IdleState idleState = new IdleState();
     FireState fireState;
     ChargingState chargingState;
+
+    Coroutine resetPlayerCoroutine;
 
     // Fire 상태에서 Idle 상태로 돌아가기 까지의 약간의 딜레이 시간
     //WaitForSeconds returnIdleWaitTimeDelay = new WaitForSeconds(0.5f);
@@ -42,6 +45,9 @@ public class PlayerController : MonoBehaviour
     Image chargingImage;
 
     Vector3 spawnPoint;
+
+    // Reset 되고 다시 돌아올 카메라 포인트의 위치
+    Vector3 cameraPointOrigin;
 
     float epsilon = 1.0f;
 
@@ -141,6 +147,8 @@ public class PlayerController : MonoBehaviour
 
         spawnPoint = transform.position;
         hp = maxHp;
+
+        cameraPointOrigin = cameraPoint.localPosition;
     }
 
     private void Start()
@@ -169,6 +177,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnDisable()
     {
+        inputAction.Player.MousePoint.performed -= On_MouseMove;
         inputAction.Player.Click.canceled -= Off_Click;
         inputAction.Player.Click.performed -= On_Click;
         inputAction.Player.Disable();
@@ -238,8 +247,8 @@ public class PlayerController : MonoBehaviour
         {
             currentState.ExitState(this);
         }
+
         currentState = newState;
-        //Debug.Log("EnterStart");
         currentState.EnterState(this);
     }
 
@@ -325,15 +334,46 @@ public class PlayerController : MonoBehaviour
 
     public void ResetPlayer()
     {
+        if(resetPlayerCoroutine != null)
+        {
+            StopCoroutine(resetPlayerCoroutine);
+        }
+
+        resetPlayerCoroutine = StartCoroutine(ResetPlayerCoroutine());
+    }
+
+    IEnumerator ResetPlayerCoroutine()
+    {
+        inputAction.Player.MousePoint.performed -= On_MouseMove;
+        cameraPoint.parent = null;
+
         SetState(idleState);
+
+        float elapsedTime = 0.0f;
+        while (elapsedTime < 1.0f)
+        {
+            elapsedTime += Time.deltaTime;
+
+            yield return null;
+        }
+
+        cameraPoint.parent = gameObject.transform;
+        cameraPoint.localPosition = cameraPointOrigin;
+        inputAction.Player.MousePoint.performed += On_MouseMove;
+
+        
 
         transform.position = spawnPoint;
         transform.rotation = Quaternion.identity;
         cameraPoint.localRotation = Quaternion.identity;
+
+        resetPlayerCoroutine = null;
     }
 
     void Clear()
     {
         inputAction.Player.Disable();
+        SetState(idleState);
+        rb.velocity = Vector3.zero;
     }
 }

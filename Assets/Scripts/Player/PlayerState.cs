@@ -1,7 +1,5 @@
 ﻿using Cinemachine;
-using System.ComponentModel.Design.Serialization;
 using UnityEngine;
-using UnityEngine.iOS;
 using UnityEngine.UI;
 
 public class ChargingState : IPlayerState

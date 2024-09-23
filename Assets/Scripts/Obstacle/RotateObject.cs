@@ -11,6 +11,8 @@ public class RotateObject : MonoBehaviour
 
     [SerializeField] private int selectedIndex = 0;
 
+    [SerializeField] private bool randomStart = true;
+
     public Vector3 SelectedVector
     {
         get
@@ -27,11 +29,21 @@ public class RotateObject : MonoBehaviour
 
     [SerializeField] float speed = 60.0f;
 
+    float randomAngle;
+
+    private void Start()
+    {
+        randomAngle = Random.Range(0, 360f);
+
+        transform.eulerAngles = SelectedVector * randomAngle;
+    }
+
     private void Update()
     {
         transform.Rotate(Time.deltaTime * speed * SelectedVector);
     }
 
+#if UNITY_EDITOR
     [CustomEditor(typeof(RotateObject))]
     public class MyScriptEditor : Editor
     {
@@ -42,6 +54,7 @@ public class RotateObject : MonoBehaviour
             serializedObject.Update();
 
             EditorGUILayout.PropertyField(serializedObject.FindProperty("speed"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("randomStart"));
 
             string[] options = new string[] { "X Axis", "Y Axis", "Z Axis" };
             myScript.selectedIndex = EditorGUILayout.Popup("Select Axis", myScript.selectedIndex, options);
@@ -53,7 +66,7 @@ public class RotateObject : MonoBehaviour
 
         
     }
-
+#endif
     //[InitializeOnLoadMethod]
     //static void CheckPropertyPaths()
     //{

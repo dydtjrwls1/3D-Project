@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -40,10 +41,13 @@ public class FadeManager : SingleTon<FadeManager>
             yield return null;
         }
 
+        //DynamicGI.UpdateEnvironment();
         // Fade In
         yield return StartCoroutine(Fade(1, 0));
         fadeCanvas.sortingOrder = -1;
     }
+
+    
 
     IEnumerator Fade(float startAlpha, float endAlpha)
     {
