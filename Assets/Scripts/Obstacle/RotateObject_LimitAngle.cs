@@ -11,11 +11,14 @@ public class RotateObject_LimitAngle : MonoBehaviour
     [Range(0.5f, 5.0f)]
     public float speed = 1.0f;
 
+    public bool randomStart = true;
+
     float elapsedTime = 0.0f;
 
 
     private void Awake()
     {
+        if (randomStart) elapsedTime = Random.Range(0, Mathf.PI);
     }
 
     private void FixedUpdate()

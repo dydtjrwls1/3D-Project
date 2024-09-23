@@ -25,8 +25,7 @@ public class RotateObject : MonoBehaviour
         }
     }
 
-    [SerializeField]
-    public float speed = 60.0f;
+    [SerializeField] float speed = 60.0f;
 
     private void Update()
     {
@@ -51,7 +50,21 @@ public class RotateObject : MonoBehaviour
 
             EditorGUILayout.LabelField("Selected Axis", myScript.SelectedVector.ToString());
         }
+
+        
     }
+
+    //[InitializeOnLoadMethod]
+    //static void CheckPropertyPaths()
+    //{
+    //    var so = new SerializedObject(Texture2D.whiteTexture);
+    //    var pop = so.GetIterator();
+
+    //    while (pop.NextVisible(true))
+    //        Debug.Log(pop.propertyPath);
+    //}
+
+
 }
 
 

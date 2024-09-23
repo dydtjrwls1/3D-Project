@@ -89,6 +89,8 @@ public class PlayerController : MonoBehaviour
 
     public Action<int> onHealthChange = null;
 
+    public Action onDie = null;
+
     public int HP
     {
         get => hp;
@@ -152,6 +154,9 @@ public class PlayerController : MonoBehaviour
         };
 
         chargingImage.fillAmount = 0.0f;
+
+        Goal goal = FindAnyObjectByType<Goal>();
+        goal.onClear += Clear;
     }
 
     private void OnEnable()
@@ -204,7 +209,7 @@ public class PlayerController : MonoBehaviour
             } 
             else
             {
-                rb.velocity *= 0.9f;
+                rb.velocity *= 0.95f;
             }
         }
 
@@ -283,6 +288,8 @@ public class PlayerController : MonoBehaviour
 
     void OnDie()
     {
+        onDie?.Invoke();
+
         Transform camTransform = vcam.transform;
 
         vcam.Follow = null;
@@ -323,5 +330,10 @@ public class PlayerController : MonoBehaviour
         transform.position = spawnPoint;
         transform.rotation = Quaternion.identity;
         cameraPoint.localRotation = Quaternion.identity;
+    }
+
+    void Clear()
+    {
+        inputAction.Player.Disable();
     }
 }

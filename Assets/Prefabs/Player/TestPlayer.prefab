@@ -131,7 +131,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0.9716981, g: 0.9716981, b: 0.9716981, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -396,7 +396,7 @@ MonoBehaviour:
   cameraSpeed: 10
   minFireForce: 5
   maxFireForce: 20
-  gravity: 1
+  gravity: 3
 --- !u!1 &4287207728263272058
 GameObject:
   m_ObjectHideFlags: 0
@@ -536,7 +536,6 @@ GameObject:
   - component: {fileID: 4480498050421817066}
   - component: {fileID: 5782676937170124557}
   - component: {fileID: 273378616475868506}
-  - component: {fileID: 7906896729343904771}
   m_Layer: 7
   m_Name: Canvas
   m_TagString: Untagged
@@ -610,23 +609,6 @@ MonoBehaviour:
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
   m_PresetInfoIsWorld: 1
---- !u!114 &7906896729343904771
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5840953105340064727}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 1
-  m_BlockingObjects: 0
-  m_BlockingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
 --- !u!1 &6085012337370192193
 GameObject:
   m_ObjectHideFlags: 0

@@ -101,7 +101,7 @@ public class FireState : IPlayerState
         // 플레이어를 카메라가 바라보는 방향으로 발사
         //rb.AddForce(player.CurrentFireForce * (root.up + root.forward), ForceMode.Impulse);
         Quaternion lookRotation = Quaternion.AngleAxis(cameraPoint.localEulerAngles.x, root.right);
-        rb.AddForce(player.CurrentFireForce * (lookRotation * (root.forward)), ForceMode.Impulse);
+        rb.AddForce(player.CurrentFireForce * (lookRotation * (root.forward + root.up * 0.75f)), ForceMode.Impulse);
         
         animator.SetBool(player.Fire_Hash, true);
     }
